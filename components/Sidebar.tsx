@@ -3,7 +3,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { clsx } from '@/lib/utils'
+import { clsxx } from '@/lib/utils'
 import { logger } from '@/lib/logger'
 import { supabase } from '@/lib/supabase'
 import { LogOut } from 'lucide-react'
@@ -56,7 +56,7 @@ export function Sidebar({ authed }: { authed: boolean }) {
           <Link
             key={it.href}
             href={it.href}
-            className={clsx(
+            className={clsxx(
               'block rounded-xl px-3 py-2 text-sm hover:bg-muted',
               pathname === it.href && 'bg-muted'
             )}

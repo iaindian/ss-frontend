@@ -5,7 +5,7 @@ import * as React from 'react'
 import Link from 'next/link'
 import { X, LogOut } from 'lucide-react'
 import { logger } from '@/lib/logger'
-import { clsx } from '@/lib/utils'
+import { clsxx } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
 
 type NavItem = {
@@ -74,7 +74,7 @@ export default function MobileSidebar({
       {/* overlay */}
       <div
         aria-hidden
-        className={clsx(
+        className={clsxx(
           'fixed inset-0 z-50 bg-black/50 transition-opacity md:hidden',
           open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         )}
@@ -88,7 +88,7 @@ export default function MobileSidebar({
         role="dialog"
         aria-modal="true"
         aria-label="Menu"
-        className={clsx(
+        className={clsxx(
           'fixed inset-y-0 left-0 z-50 w-72 border-r border-border bg-card p-4 shadow-xl transition-transform md:hidden',
           open ? 'translate-x-0' : '-translate-x-full'
         )}

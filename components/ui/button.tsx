@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { clsx } from '@/lib/utils'
+import { clsxx } from '@/lib/utils'
 
 export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: 'default' | 'ghost' | 'outline'
@@ -14,7 +14,7 @@ export function Button({ className, variant = 'default', loading, children, ...p
     outline: 'border border-border bg-transparent text-foreground hover:bg-muted'
   } as const
   return (
-    <button className={clsx(base, variants[variant], className)} disabled={loading || props.disabled} {...props}>
+    <button className={clsxx(base, variants[variant], className)} disabled={loading || props.disabled} {...props}>
       {loading ? '…' : children}
     </button>
   )

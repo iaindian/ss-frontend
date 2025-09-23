@@ -101,7 +101,7 @@ const realApi = {
   createOrder: (body: { pack_id: string }) =>
     apiFetch('/orders', { method: 'POST', body: JSON.stringify(body) }),
   getOrders: () => apiFetch('/orders'),
-  getOrder: (id: string) => apiFetch(`/orders/${id}`),
+  // getOrder: (id: string) => apiFetch(`/orders/${id}`),
 
   // 👇 NEW: upsert user after OAuth callback
   authUpsert: (body: {
@@ -129,6 +129,9 @@ const realApi = {
   usePack: (id: string) => apiFetch(`/packs/${encodeURIComponent(id)}/use`, { method: 'POST' }),
   getPack: (slug: string): Promise<Pack> =>
     apiFetch<Pack>(`/packs/${encodeURIComponent(slug)}`),
+  getJobStatus: (request_id: string) => apiFetch(`/jobs/${encodeURIComponent(request_id)}`),
+getGallery: (request_id: string) => apiFetch(`/gallery/${encodeURIComponent(request_id)}`),
+getOrder: (id: string) => apiFetch(`/orders/${encodeURIComponent(id)}`),
 }
 
 /* ------------ EXPORT TOGGLE ------------- */

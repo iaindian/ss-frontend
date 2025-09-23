@@ -2,37 +2,51 @@
 'use client'
 import * as React from 'react'
 import { Api } from '@/lib/api'
-import type { Job } from '@/lib/types'
 import { logger } from '@/lib/logger'
 
+export type OrderListItem = {
+  id: string
+  created_at?: string
+  pack_title?: string
+  amount_cents?: number
+  currency?: string
+  status?: string                // PAID | REQUIRES_PAYMENT | FAILED | REFUNDED
+  job_request_id?: string | null
+  checkout_url?: string | null   // hosted checkout link if available
+}
+
 export function useOrders() {
-  const [jobs, setJobs] = React.useState<Job[]>([])
-  const [loading, setLoading] = React.useState(true)        // first load only
-  const [isFetching, setIsFetching] = React.useState(false) // manual refresh spinner
+  const [orders, setOrders] = React.useState<OrderListItem[]>([])
+  const [loading, setLoading] = React.useState<boolean>(true)
   const [error, setError] = React.useState<string | null>(null)
-  const [lastUpdated, setLastUpdated] = React.useState<Date | null>(null)
 
-  const refresh = React.useCallback(async (showSpinner = false) => {
-    if (showSpinner && jobs.length === 0) setLoading(true)
-    else setIsFetching(true)
-
-    setError(null)
+  const refresh = React.useCallback(async () => {
     try {
-      const data = await Api.getOrders()
-      setJobs(data)
-      setLastUpdated(new Date())
-      logger.info('orders.refresh.success', { count: data?.length })
+      setError(null); setLoading(true)
+      const res = await Api.getOrders()
+      const items: OrderListItem[] = (res?.items || res || []).map((o: any) => ({
+        id: o.id,
+        created_at: o.created_at,
+        pack_title: o.pack_title || o.pack?.title,
+        amount_cents: o.amount_cents,
+        currency: o.currency,
+        status: o.status,
+        job_request_id: o.job_request_id,
+        // if you also return client_secret sometimes, hide checkout_url in that case
+        checkout_url: o.client_secret ? null : o.checkout_url ?? null,
+      }))
+      setOrders(items)
+      logger.info('orders.loaded', { count: items.length })
     } catch (e: any) {
-      setError(e?.message || 'Failed to load orders')
-      logger.error('orders.refresh.error', { error: e?.message })
+      const msg = e?.message || 'Failed to load orders'
+      setError(msg)
+      logger.error('orders.load.failed', { error: msg })
     } finally {
       setLoading(false)
-      setIsFetching(false)
     }
-  }, [jobs.length])
+  }, [])
 
-  // initial load once
-  React.useEffect(() => { refresh(true) }, [refresh])
+  React.useEffect(() => { void refresh() }, [refresh])
 
-  return { jobs, loading, isFetching, error, refresh, lastUpdated }
+  return { orders, loading, error, refresh }
 }
