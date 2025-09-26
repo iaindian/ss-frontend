@@ -1,6 +1,6 @@
 // app/(main)/layout.tsx
 'use client'
-
+import * as React from 'react'
 import { Suspense, useState } from 'react'
 import { Sidebar } from '@/components/Sidebar'
 import { TopbarMobile } from '@/components/TopbarMobile'
@@ -8,6 +8,8 @@ import MobileSidebar from '@/components/MobileSidebar'
 import ClientToaster from '@/components/ClientToaster'
 import { useAuth } from '@/hooks/useAuth'
 import { logger } from '@/lib/logger'
+import { Api } from '@/lib/api'
+
 
 // export default function MainLayout({ children }: { children: React.ReactNode }) {
 //   const { me, loading } = useAuth()
@@ -42,6 +44,23 @@ import { logger } from '@/lib/logger'
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const { me, loading } = useAuth()
+  const [free_credits, setRefUrl] = React.useState<number | null>(null)
+  React.useEffect(() => {
+        let dead = false
+        ;(async () => {
+          try {
+            const res = await Api.getMyProfile()
+            console.log("res is",res);
+            if (!dead) {
+               console.log("res is",res.free_credits);
+              setRefUrl(res?.free_credits ?? null)
+            }
+            } catch {
+            // ignore
+          }
+        })()
+        return () => { dead = true }
+      }, [])
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
@@ -61,7 +80,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                      border-r border-border bg-card/80 backdrop-blur
                      overflow-y-auto scrollbar-none"
         >
-          <Sidebar authed={!!me} />
+          <Sidebar authed={!!me} credits={free_credits} />
         </aside>
 
         {/* Main content – shifted to the right on desktop */}
@@ -79,6 +98,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         authed={!!me}
         open={mobileOpen}
         onClose={() => { logger.info('mobile.close'); setMobileOpen(false) }}
+        credits={free_credits}
       />
 
       <ClientToaster />

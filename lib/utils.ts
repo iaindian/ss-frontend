@@ -1,5 +1,6 @@
 import { twMerge } from "tailwind-merge"
-import { clsx, type ClassValue } from "clsx"
+// import { clsx, type ClassValue } from "clsx"
+import clsx, { ClassValue } from "clsx"
 
 export function cents(amount: number, currency = 'USD') {
   return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount / 100)

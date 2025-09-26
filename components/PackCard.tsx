@@ -22,11 +22,11 @@ export function PackCard({ pack, me, onGenerate, variant = 'default' }: Props) {
     <Card className={isCompact ? 'p-0' : ''}>
       <CardHeader className={isCompact ? 'py-3 px-3' : undefined}>
         <CardTitle className={isCompact ? 'text-base' : 'text-lg'}>
-          <Link href={`/packs/${pack.slug || pack.id}`} className="hover:underline">
+          <Link href={`/packs/${pack.slug || pack.id}`} className="hover:underline font-display">
             {pack.title}
           </Link>
         </CardTitle>
-        <div className={`text-foreground/60 ${isCompact ? 'text-[11px]' : 'text-xs'}`}>{pack.category}</div>
+        <div className={`text-foreground/60  ${isCompact ? 'text-[11px]' : 'text-xs'}`}>{pack.category}</div>
       </CardHeader>
 
       <CardContent className={isCompact ? 'px-3 pb-3 pt-0' : undefined}>

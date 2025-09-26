@@ -1,31 +1,45 @@
 // components/PackGallery.tsx
-'use client'
-import * as React from 'react'
-import { ChevronLeft, ChevronRight, ImageOff } from 'lucide-react'
-import { logger } from '@/lib/logger'
-import { clsx } from '@/lib/utils'
+"use client";
+import * as React from "react";
+import { ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
+import { logger } from "@/lib/logger";
+import { clsxx } from "@/lib/utils";
 
 export function PackGallery({ images }: { images: string[] }) {
-  const imgs = (images || []).filter(Boolean)
-  const MANY = imgs.length > 4
+  const imgs = (images || []).filter(Boolean);
+  const MANY = imgs.length > 4;
 
-  const [idx, setIdx] = React.useState(0)
-  const [loaded, setLoaded] = React.useState<boolean[]>(() => imgs.map(() => false))
-  const [errored, setErrored] = React.useState<boolean[]>(() => imgs.map(() => false))
+  const [idx, setIdx] = React.useState(0);
+  const [loaded, setLoaded] = React.useState<boolean[]>(() =>
+    imgs.map(() => false)
+  );
+  const [errored, setErrored] = React.useState<boolean[]>(() =>
+    imgs.map(() => false)
+  );
 
   React.useEffect(() => {
-    setLoaded(imgs.map(() => false))
-    setErrored(imgs.map(() => false))
+    setLoaded(imgs.map(() => false));
+    setErrored(imgs.map(() => false));
     imgs.forEach((src, i) => {
-      const el = new Image()
-      el.decoding = 'async'
-      el.loading = 'eager'
-      el.referrerPolicy = 'no-referrer'
-      el.src = src
-      el.onload = () => setLoaded((p) => { const a = [...p]; a[i] = true; return a })
-      el.onerror = () => setErrored((p) => { const a = [...p]; a[i] = true; return a })
-    })
-  }, [imgs.join('|')])
+      const el = new Image();
+      el.decoding = "async";
+      el.loading = "eager";
+      el.referrerPolicy = "no-referrer";
+      el.src = src;
+      el.onload = () =>
+        setLoaded((p) => {
+          const a = [...p];
+          a[i] = true;
+          return a;
+        });
+      el.onerror = () =>
+        setErrored((p) => {
+          const a = [...p];
+          a[i] = true;
+          return a;
+        });
+    });
+  }, [imgs.join("|")]);
 
   // ===== Small grid (≤ 4) – fit-by-height =====
   if (!MANY) {
@@ -37,17 +51,19 @@ export function PackGallery({ images }: { images: string[] }) {
             className="relative w-full overflow-hidden rounded-xl bg-neutral-900"
             style={{ height: 260 }}
           >
-            {!loaded[i] && !errored[i] && <div className="absolute inset-0 animate-pulse bg-neutral-800" />}
+            {!loaded[i] && !errored[i] && (
+              <div className="absolute inset-0 animate-pulse bg-neutral-800" />
+            )}
             {errored[i] ? (
               <Placeholder />
             ) : (
               <img
                 src={src}
                 alt={`preview ${i + 1}`}
-                className={clsx(
+                className={clsxx(
                   // 👇 keep aspect, fill by height, don’t overflow width
-                  'h-full w-auto max-w-full object-contain transition-opacity duration-300 mx-auto',
-                  loaded[i] ? 'opacity-100' : 'opacity-0'
+                  "h-full w-auto max-w-full object-contain transition-opacity duration-300 mx-auto",
+                  loaded[i] ? "opacity-100" : "opacity-0"
                 )}
                 referrerPolicy="no-referrer"
                 decoding="async"
@@ -58,35 +74,35 @@ export function PackGallery({ images }: { images: string[] }) {
           </div>
         ))}
       </div>
-    )
+    );
   }
 
   // ===== Carousel (> 4) – fit-by-height =====
-  const H = 460
+  const H = 460;
 
   const prev = () =>
     setIdx((p) => {
-      const n = (p - 1 + imgs.length) % imgs.length
-      logger.info('gallery.prev', { from: p, to: n })
-      return n
-    })
+      const n = (p - 1 + imgs.length) % imgs.length;
+      logger.info("gallery.prev", { from: p, to: n });
+      return n;
+    });
   const next = () =>
     setIdx((p) => {
-      const n = (p + 1) % imgs.length
-      logger.info('gallery.next', { from: p, to: n })
-      return n
-    })
+      const n = (p + 1) % imgs.length;
+      logger.info("gallery.next", { from: p, to: n });
+      return n;
+    });
 
-  const touch = React.useRef<{ x: number; y: number } | null>(null)
+  const touch = React.useRef<{ x: number; y: number } | null>(null);
   function onTouchStart(e: React.TouchEvent) {
-    const t = e.touches[0]
-    touch.current = { x: t.clientX, y: t.clientY }
+    const t = e.touches[0];
+    touch.current = { x: t.clientX, y: t.clientY };
   }
   function onTouchEnd(e: React.TouchEvent) {
-    if (!touch.current) return
-    const dx = e.changedTouches[0].clientX - touch.current.x
-    if (Math.abs(dx) > 40) (dx > 0 ? prev() : next())
-    touch.current = null
+    if (!touch.current) return;
+    const dx = e.changedTouches[0].clientX - touch.current.x;
+    if (Math.abs(dx) > 40) dx > 0 ? prev() : next();
+    touch.current = null;
   }
 
   return (
@@ -109,17 +125,19 @@ export function PackGallery({ images }: { images: string[] }) {
               className="min-w-full shrink-0 grow-0 basis-auto relative flex items-center justify-center"
               style={{ height: H }}
             >
-              {!loaded[i] && !errored[i] && <div className="absolute inset-0 animate-pulse bg-neutral-800" />}
+              {!loaded[i] && !errored[i] && (
+                <div className="absolute inset-0 animate-pulse bg-neutral-800" />
+              )}
               {errored[i] ? (
                 <Placeholder />
               ) : (
                 <img
                   src={src}
                   alt={`preview ${i + 1}`}
-                  className={clsx(
+                  className={clsxx(
                     // 👇 fit by height, keep aspect, center horizontally
-                    'h-full w-auto max-w-full object-contain transition-opacity duration-300',
-                    loaded[i] ? 'opacity-100' : 'opacity-0'
+                    "h-full w-auto max-w-full object-contain transition-opacity duration-300",
+                    loaded[i] ? "opacity-100" : "opacity-0"
                   )}
                   referrerPolicy="no-referrer"
                   decoding="async"
@@ -152,7 +170,10 @@ export function PackGallery({ images }: { images: string[] }) {
             {imgs.map((_, i) => (
               <span
                 key={i}
-                className={clsx('h-1.5 w-1.5 rounded-full', i === idx ? 'bg-primary' : 'bg-white/40')}
+                className={clsxx(
+                  "h-1.5 w-1.5 rounded-full",
+                  i === idx ? "bg-primary" : "bg-white/40"
+                )}
                 aria-hidden
               />
             ))}
@@ -160,7 +181,7 @@ export function PackGallery({ images }: { images: string[] }) {
         </>
       )}
     </div>
-  )
+  );
 }
 
 function Placeholder() {
@@ -171,5 +192,5 @@ function Placeholder() {
         Image unavailable
       </div>
     </div>
-  )
+  );
 }

@@ -1,7 +1,9 @@
 {
-  "/(main)/orders/page": "app/(main)/orders/page.js",
+  "/(auth)/login/page": "app/(auth)/login/page.js",
   "/(main)/page": "app/(main)/page.js",
-  "/(main)/attributes/page": "app/(main)/attributes/page.js",
+  "/(main)/packs/[slug]/page": "app/(main)/packs/[slug]/page.js",
   "/(main)/support/page": "app/(main)/support/page.js",
-  "/(main)/tutorial/page": "app/(main)/tutorial/page.js"
+  "/(main)/attributes/page": "app/(main)/attributes/page.js",
+  "/(main)/legal/terms/page": "app/(main)/legal/terms/page.js",
+  "/(main)/legal/privacy/page": "app/(main)/legal/privacy/page.js"
 }

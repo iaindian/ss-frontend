@@ -1,9 +1,9 @@
 {
   "pages": {
-    "/(main)/orders/page": [
+    "/(main)/tutorial/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(main)/orders/page.js"
+      "static/chunks/app/(main)/tutorial/page.js"
     ],
     "/(main)/layout": [
       "static/chunks/webpack.js",
@@ -31,30 +31,50 @@
       "static/chunks/main-app.js",
       "static/chunks/app/not-found.js"
     ],
-    "/_not-found/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
-    ],
     "/(main)/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(main)/page.js"
     ],
-    "/(main)/attributes/page": [
+    "/_not-found/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(main)/attributes/page.js"
+      "static/chunks/app/_not-found/page.js"
+    ],
+    "/(main)/packs/[slug]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(main)/packs/[slug]/page.js"
+    ],
+    "/(auth)/login/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(auth)/login/page.js"
     ],
     "/(main)/support/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(main)/support/page.js"
     ],
-    "/(main)/tutorial/page": [
+    "/(main)/attributes/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(main)/tutorial/page.js"
+      "static/chunks/app/(main)/attributes/page.js"
+    ],
+    "/(main)/legal/terms/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(main)/legal/terms/page.js"
+    ],
+    "/(main)/legal/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(main)/legal/layout.js"
+    ],
+    "/(main)/legal/privacy/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(main)/legal/privacy/page.js"
     ]
   }
 }

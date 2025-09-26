@@ -14,3 +14,10 @@
 .scrollbar-none::-webkit-scrollbar {
   display: none; /* Chrome, Safari */
 }
+
+.prose :where(h1, h2, h3) {
+  @apply scroll-mt-24;
+}
+.prose :where(p, li) {
+  @apply leading-7;
+}

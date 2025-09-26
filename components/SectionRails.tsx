@@ -71,7 +71,7 @@ export function SectionRail({
   return (
     <section className="px-1 space-y-3">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">{title}</h2>
+        <h2 className=" font-display text-lg font-semibold">{title}</h2>
       </div>
 
       <div className="relative">

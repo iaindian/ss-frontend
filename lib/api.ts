@@ -24,6 +24,7 @@ function cryptoRandom() {
 
 export async function apiFetch<T>(path: string, opts: FetchOptions = {}): Promise<T> {
   const url = path.startsWith('http') ? path : `${API_BASE}${path}`
+  
 
   // 👇 inject Supabase JWT if present
   let authHeader: Record<string, string> = {}
@@ -32,16 +33,24 @@ export async function apiFetch<T>(path: string, opts: FetchOptions = {}): Promis
     const token = session?.access_token
     const uid = session?.user?.id
     if (uid) authHeader['X-User-Id'] = uid 
-    if (token) authHeader = { Authorization: `Bearer ${token}` }
+    // if (token) authHeader = { Authorization: `Bearer ${token}` }
+    if (token) authHeader['Authorization'] = `Bearer ${token}` 
   } catch (e) {
     logger.warn('apiFetch token fetch failed', { msg: (e as any)?.message })
   }
+  const { retry = 1, headers, body, ...rest } = opts
+  const autoHeaders: Record<string, string> = {}
+  const isForm = typeof FormData !== 'undefined' && body instanceof FormData
+  if (!isForm) {
+    autoHeaders['Content-Type'] = 'application/json'
+  }
 
-  const { retry = 1, headers, ...rest } = opts
+  
   const config: RequestInit = {
     ...rest,
+    body,
     headers: {
-      'Content-Type': 'application/json',
+      ...autoHeaders,
       ...authHeader,
       ...(headers || {}),
     },
@@ -95,6 +104,7 @@ const realApi = {
   getMe: (): Promise<Me> => apiFetch<Me>('/me'),
 
   getAttributes: () => apiFetch('/attributes'),
+  getMyProfile: () => apiFetch<{ reference_image_url?: string }>('/me/profile'),
   updateAttributes: (payload: any) =>
     apiFetch('/attributes', { method: 'PUT', body: JSON.stringify(payload) }),
 
@@ -132,6 +142,13 @@ const realApi = {
   getJobStatus: (request_id: string) => apiFetch(`/jobs/${encodeURIComponent(request_id)}`),
 getGallery: (request_id: string) => apiFetch(`/gallery/${encodeURIComponent(request_id)}`),
 getOrder: (id: string) => apiFetch(`/orders/${encodeURIComponent(id)}`),
+uploadReferenceImage: (file: File) => {
+    const fd = new FormData()
+    fd.append('file', file)
+    return apiFetch<{ url: string }>('/me/reference-image-upload', { method: 'POST', body: fd })
+  },
+  setReferenceImage: (payload: { reference_image_url: string }) =>
+    apiFetch('/me/reference-image', { method: 'POST', body: JSON.stringify(payload) }),
 }
 
 /* ------------ EXPORT TOGGLE ------------- */

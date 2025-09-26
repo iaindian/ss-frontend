@@ -21,6 +21,7 @@ export function useAuth() {
       const { data: { session }, error } = await supabase.auth.getSession()
       if (error) throw error
       const user = session?.user || null
+      console.log("user is",user)
       setMe(user ? {
         id: user.id,
         email: user.email || '',
