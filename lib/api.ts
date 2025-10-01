@@ -149,6 +149,20 @@ uploadReferenceImage: (file: File) => {
   },
   setReferenceImage: (payload: { reference_image_url: string }) =>
     apiFetch('/me/reference-image', { method: 'POST', body: JSON.stringify(payload) }),
+  getSupportCaptcha: () => apiFetch<{ a:number; b:number; ts:number; sig:string }>('/support/captcha'),
+  submitSupport: (data: {
+    order_id: string
+    message: string
+    a: number
+    b: number
+    ts: number
+    sig: string
+    answer: number
+  }) => apiFetch<{ ok: boolean; ticket_id: string }>('/support', { method: 'POST', body: JSON.stringify(data) }),
+  getSupportTickets: (limit = 2, offset = 0) =>
+  apiFetch<{ items: Array<{ id: string; created_at?: string; order_id?: string; message?: string; status?: string }> }>(
+    `/support/tickets?limit=${limit}&offset=${offset}`
+  ),
 }
 
 /* ------------ EXPORT TOGGLE ------------- */
