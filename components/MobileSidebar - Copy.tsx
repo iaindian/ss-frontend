@@ -100,6 +100,7 @@ export default function MobileSidebar({
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="h-3 w-3 rounded-full bg-primary shadow-neon" />
+            
             <span className="text-sm font-semibold">AI Image Pack</span>
           </div>
           <button

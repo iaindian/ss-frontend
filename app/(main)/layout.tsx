@@ -9,6 +9,7 @@ import ClientToaster from '@/components/ClientToaster'
 import { useAuth } from '@/hooks/useAuth'
 import { logger } from '@/lib/logger'
 import { Api } from '@/lib/api'
+import { CookieBanner } from '@/components/CookieBanner'
 
 
 // export default function MainLayout({ children }: { children: React.ReactNode }) {
@@ -102,6 +103,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       />
 
       <ClientToaster />
+      <CookieBanner />
     </>
   )
 }

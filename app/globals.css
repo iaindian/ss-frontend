@@ -21,3 +21,12 @@
 .prose :where(p, li) {
   @apply leading-7;
 }
+
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+/* optional: hide horizontal scrollbars for the rail */
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }

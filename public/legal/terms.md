@@ -1,8 +1,8 @@
 # Terms & Conditions
 
-_Last updated: [Date]_
+_Last updated: [04-0ct-2025]_
 
-These Terms & Conditions (“Terms”) govern your use of the services provided by **SuperselfieAI**, a trade name of **Programvooralle**, registered as a sole proprietorship with the Dutch Chamber of Commerce (KVK) under number [your KVK number] (“Company”, “we”, “our”, “us”).
+These Terms & Conditions (“Terms”) govern your use of the services provided by **SuperselfieAI**, a trade name of **Programvooralle**, registered as a sole proprietorship with the Dutch Chamber of Commerce (KVK) under number KVK 93036779 (“Company”, “we”, “our”, “us”).
 
 By using our website and services, you agree to be bound by these Terms.
 
@@ -69,6 +69,7 @@ We may update these Terms at any time. Continued use of the Services indicates a
 
 ## 10. Contact
 **Programvooralle (trading as SuperselfieAI)**  
-KVK: [KVK number]  
-Email: [your support email]  
-Website: [superselfieai domain]
+KVK: 93036779  
+Email: contact@superselfieai.com  
+Website: https://superselfieai.com
+

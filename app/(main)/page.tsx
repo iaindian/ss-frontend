@@ -9,8 +9,11 @@ import { getStripe } from "@/lib/stripe";
 import { logger } from "@/lib/logger";
 import type { Pack } from "@/lib/types";
 import { SectionRail } from "@/components/SectionRails"; // ✅ use existing component
+import { SocialRail } from "@/components/SocialRail";
 import { useAttributes } from "@/hooks/useAttributes";
 import { ConfirmGenerateDialog } from "@/components/ConfirmGenerateDialog";
+import { SectionSocialRail } from "@/components/SectionSocialRail";
+import { SocialProofTicker } from "@/components/SocialProof";
 
 export default function PacksPage() {
   const { packs, loading, error } = usePacks();
@@ -131,18 +134,27 @@ export default function PacksPage() {
         const items = rails[s.slug] || [];
         if (!items.length) return null;
         return (
-          <SectionRail
-            key={s.slug}
-            title={s.name}
-            packs={items}
-            me={me}
-            onGenerate={openConfirm}
-          />
-        );
+        //   <SectionRail
+        //     key={s.slug}
+        //     title={s.name}
+        //     packs={items}
+        //     me={me}
+        //     onGenerate={openConfirm}
+        //   />
+        // );
+        <SectionSocialRail
+          key={s.slug}
+          title={s.name}
+          packs={items}
+          onGenerate={openConfirm}
+          intervalSeconds={5}       // ← tweak if you want
+          resumeAfterSeconds={6}    // ← tweak if you want
+        />
+      );
       })}
 
       {/* Fallback grid (your original design) */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {/* <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {packs.map((p) => (
           <PackCard
             key={p.id}
@@ -151,7 +163,7 @@ export default function PacksPage() {
             onGenerate={() => openConfirm(p)}
           />
         ))}
-      </div>
+      </div> */}
       <ConfirmGenerateDialog
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
@@ -163,6 +175,7 @@ export default function PacksPage() {
           await handleGenerate(selected);
         }}
       />
+      {/* <SocialProofTicker /> */}
     </div>
   );
 }

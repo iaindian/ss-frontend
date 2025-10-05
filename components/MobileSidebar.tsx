@@ -6,7 +6,8 @@ import { usePathname } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { logger } from '@/lib/logger'
 import { clsxx } from '@/lib/utils'
-
+import Image from 'next/image'
+import { SocialLinks } from '@/components/SocialLinks'
 // Icons
 import {
   X,
@@ -89,7 +90,13 @@ export default function MobileSidebar({
         {/* Header */}
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-full bg-primary shadow-[0_0_10px_#22d3ee]" />
+            {/* <div className="h-3 w-3 rounded-full bg-primary shadow-[0_0_10px_#22d3ee]" /> */}
+             <Image
+                    src="/logo2.png"         // path under /public
+                    alt="SuperSelfie AI"
+                    width={35}
+                    height={35}
+                  />
             <span className="text-sm font-semibold">SuperSelfie AI</span>
           </div>
           <button
@@ -135,6 +142,10 @@ export default function MobileSidebar({
         </nav>
 
         {/* Footer */}
+            <div className="mb-3 items-center justify-between px-2">
+              {/* <div className="text-xs mb-2 opacity-60 flex px-2">Community</div> */}
+              <SocialLinks />
+            </div>
         {authed ? (
           <div className="p-3">
             <button

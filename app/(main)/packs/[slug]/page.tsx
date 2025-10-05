@@ -1,222 +1,49 @@
 // app/(main)/packs/[slug]/page.tsx
-"use client";
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import type { Metadata } from 'next'
+import PackDetailClient from './PackDetailClient'
 
-import * as React from "react";
-import { useParams, useRouter } from "next/navigation";
-import { useAttributes } from "@/hooks/useAttributes";
-import { Api } from "@/lib/api";
-import type { Pack } from "@/lib/types";
-import { logger } from "@/lib/logger";
-import { cents } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { ErrorView } from "@/components/ErrorView";
-import { PackGallery } from "@/components/PackGallery";
-import { SocialPreviewDialog } from "@/components/SocialPreview";
-import { getStripe } from "@/lib/stripe";
-import Link from "next/link";
-import { useAuth } from "@/hooks/useAuth"; // if not already present
-import { ConfirmGenerateDialog } from "@/components/ConfirmGenerateDialog";
+type PackMeta = { slug: string; title: string; description?: string; updated_at?: string | null }
 
-export default function PackDetailPage() {
-  const { slug } = useParams<{ slug: string }>();
-  const router = useRouter();
-  const { attributes, hasAttributes } = useAttributes();
-
-  const [pack, setPack] = React.useState<Pack | null>(null);
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState<string | null>(null);
-  const [previewOpen, setPreviewOpen] = React.useState(false);
-  const [buying, setBuying] = React.useState(false);
-  const { me } = useAuth();
-  const [confirmOpen, setConfirmOpen] = React.useState(false);
-  const [referenceUrl, setRefUrl] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    let dead = false;
-    (async () => {
-      try {
-        const res = await Api.getMyProfile();
-        if (!dead) setRefUrl(res?.reference_image_url || null);
-      } catch {
-        // ignore
-      }
-    })();
-    return () => {
-      dead = true;
-    };
-  }, []);
-
-  React.useEffect(() => {
-    let mounted = true;
-    async function load() {
-      try {
-        setError(null);
-        setLoading(true);
-
-        // 1) Try dedicated endpoint first
-        try {
-          const p = await (Api as any).getPack?.(slug);
-          if (p && mounted) {
-            setPack(p as Pack);
-            logger.info("pack.detail.loaded", { slug, via: "getPack" });
-            return;
-          }
-        } catch {
-          /* fall through to list */
-        }
-
-        // 2) Fallback: list packs and find by slug (supports both array & paginated shapes)
-        try {
-          const res: any = await (Api as any).getPacks?.();
-          const list: Pack[] = Array.isArray(res) ? res : res?.items ?? []; // if Paginated<{items: Pack[]}>
-          const p = list.find((x) => x.slug === slug || x.id === slug) || null;
-          if (!p) throw new Error("Pack not found");
-          if (mounted) {
-            setPack(p);
-            logger.info("pack.detail.loaded", {
-              slug,
-              via: "getPacks-fallback",
-            });
-          }
-        } catch (e) {
-          throw e;
-        }
-      } catch (e: any) {
-        setError(e?.message || "Failed to load pack");
-        logger.error("pack.detail.error", { slug, error: e?.message });
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
-    return () => {
-      mounted = false;
-    };
-  }, [slug]);
-
-  function openConfirm() {
-    if (!me) {
-      alert("Please login to generate a pack.");
-      window.location.href = "/login";
-      return;
-    }
-
-    if (!hasAttributes || !referenceUrl) {
-      alert(
-        !hasAttributes
-          ? "Please complete your attributes first. Redirecting…"
-          : "Please upload a reference face first. Redirecting…"
-      );
-      router.push("/attributes?required=1");
-      return;
-    }
-    setConfirmOpen(true);
+async function readPackList(): Promise<PackMeta[]> {
+  try {
+    const p = path.join(process.cwd(), 'data', 'packs.json')
+    const raw = await fs.readFile(p, 'utf8')
+    const json = JSON.parse(raw)
+    return json?.packs || []
+  } catch {
+    return []
   }
+}
 
-  async function handleGenerate() {
-    if (!pack) return;
-    setBuying(true);
-    try {
-      const res: any = await Api.createOrder({ pack_id: pack.id });
-      logger.info("order.created", { order_id: res?.id, pack_id: pack.id });
-      if (res?.checkout_url) {
-        window.location.href = res.checkout_url;
-        return;
-      }
-      if (res?.client_secret) {
-        const stripe = await getStripe();
-        if (!stripe) throw new Error("Stripe not configured");
-        const { error } = await stripe.confirmCardPayment(res.client_secret);
-        if (error) throw error;
-      }
-      router.push("/orders");
-    } catch (e: any) {
-      logger.error("order.create.failed", { error: e?.message });
-      alert(e?.message || "Failed to create order");
-    } finally {
-      setBuying(false);
-    }
+// 👇 tell Next which slugs to export
+export async function generateStaticParams() {
+  const packs = await readPackList()
+  return packs.map(p => ({ slug: p.slug }))
+}
+
+// Optional but good: proper <title>, OG/Twitter tags
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const packs = await readPackList()
+  const p = packs.find(x => x.slug === params.slug)
+  const title = p ? `${p.title} — SuperSelfieAI` : 'Pack — SuperSelfieAI'
+  const description = p?.description || 'Curated AI image pack.'
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `https://superselfieai.com/packs/${params.slug}`,
+      siteName: 'SuperSelfieAI',
+      type: 'website'
+    },
+    twitter: { card: 'summary_large_image', title, description }
   }
+}
 
-  if (loading) return <div className="p-6">Loading pack…</div>;
-  if (error || !pack) return <ErrorView description={error || "Not found"} />;
-
-  return (
-    <div className="grid gap-6 md:grid-cols-3">
-      {/* LEFT: Hero / details */}
-      <div className="md:col-span-2 space-y-4">
-        <div className="rounded-2xl border border-border bg-card p-3">
-          {/* 👇 keeps your preview behavior intact */}
-          <PackGallery images={pack.preview_images || []} />
-        </div>
-
-        <div className="rounded-2xl border border-border bg-card p-4 space-y-2">
-          <div className="flex items-start justify-between gap-3">
-            <h1 className="text-2xl font-semibold">{pack.title}</h1>
-            <span className="text-xs uppercase text-foreground/60">
-              {pack.category}
-            </span>
-          </div>
-          {pack.description ? (
-            <p className="text-sm opacity-90">{pack.description}</p>
-          ) : (
-            <p className="text-sm opacity-60">
-              A curated style pack. See previews above.{" "}
-              <Link href="/" className="underline">
-                Back to all packs
-              </Link>
-            </p>
-          )}
-        </div>
-      </div>
-
-      {/* RIGHT: Sticky CTA */}
-      <div className="md:col-span-1">
-        <div className="sticky top-20 space-y-3">
-          <div className="rounded-2xl border border-border bg-card p-4">
-            <div className="text-sm opacity-70 mb-1">Price</div>
-            <div className="text-xl font-semibold">
-              {cents(pack.price_cents, pack.currency)}
-            </div>
-            <div className="mt-4 grid gap-2">
-              <Button onClick={openConfirm} loading={buying}>
-                Generate This Pack
-              </Button>
-              <Button variant="outline" onClick={() => setPreviewOpen(true)}>
-                Preview on Social
-              </Button>
-            </div>
-            <div className="mt-3 text-xs opacity-70">
-              New users get <strong>3 free credits</strong> on first login.
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-border bg-card p-4 text-xs opacity-70">
-            <div className="font-medium mb-1">What you get</div>
-            <ul className="list-disc pl-4 space-y-1">
-              <li>High-res images in ZIP</li>
-              <li>Email when ready</li>
-              <li>License for personal sharing</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* Social preview dialog */}
-      <SocialPreviewDialog
-        open={previewOpen}
-        onOpenChange={setPreviewOpen}
-        images={pack.preview_images || []}
-        title={pack.title}
-      />
-      <ConfirmGenerateDialog
-        open={confirmOpen}
-        onOpenChange={setConfirmOpen}
-        packTitle={pack.title}
-        attributes={attributes}
-        referenceUrl={referenceUrl}
-        onConfirm={handleGenerate}
-      />
-    </div>
-  );
+export default function Page({ params }: { params: { slug: string } }) {
+  // All interactivity stays in the client component:
+  return <PackDetailClient slug={params.slug} />
 }

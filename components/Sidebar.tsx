@@ -8,6 +8,8 @@ import { logger } from "@/lib/logger";
 import { supabase } from "@/lib/supabase";
 import { LogOut } from "lucide-react";
 import * as React from "react";
+import Image from 'next/image'
+import { SocialLinks } from '@/components/SocialLinks'
 import { Zap } from "lucide-react";
 import { Box, UserCircle2, Package, HelpCircle, BookOpen, Users  } from "lucide-react"
 
@@ -74,7 +76,13 @@ export function Sidebar({
     <aside className="hidden h-screen w-64 flex-none border-r border-border bg-black/40 p-4 md:flex md:flex-col">
       {/* Header */}
       <div className="mb-6 flex items-center gap-2">
-        <div className="h-3 w-3 rounded-full bg-primary shadow-neon" />
+        {/* <div className="h-3 w-3 rounded-full bg-primary shadow-neon" /> */}
+        <Image
+        src="/logo2.png"         // path under /public
+        alt="SuperSelfie AI"
+        width={35}
+        height={35}
+      />
         <span className="font-display text-xl font-semibold">SuperSelfie AI</span>
       </div>
 
@@ -114,7 +122,15 @@ export function Sidebar({
       
 
       {/* Push footer to the bottom */}
-      <div className="flex-1" />
+    <div className="flex-1" />
+
+    
+
+    {/* Socials */}
+    <div className="mb-3 items-center justify-between px-2">
+      {/* <div className="text-xs mb-2 opacity-60 flex px-2">Community</div> */}
+      <SocialLinks />
+    </div>
 
       {/* Footer / Logout */}
       {authed && (
@@ -162,6 +178,7 @@ export function Sidebar({
     </div>
 
     <div className="my-3 h-px w-full bg-border/60" />
+
 
     {/* Logout */}
     <button

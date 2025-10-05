@@ -3,6 +3,7 @@
 
 import Link from 'next/link'
 import { Menu } from 'lucide-react'
+import Image from 'next/image'
 
 export function TopbarMobile({
   authed,
@@ -21,12 +22,20 @@ export function TopbarMobile({
         <Menu className="h-6 w-6" />
       </button>
 
-      <Link href="/" className="text-sm font-semibold">AI Image Pack</Link>
+      <Link href="/" className="text-sm font-semibold">
+      <Image
+              src="/logo2.png"         // path under /public
+              alt="SuperSelfie AI"
+              width={35}
+              height={35}
+            />
+  
+            </Link>
 
       {!authed ? (
         <Link href="/login" className="rounded-lg bg-primary px-3 py-1 text-black text-sm">Login</Link>
       ) : (
-        <Link href="/attributes" className="rounded-lg bg-primary px-3 py-1 text-black text-sm">Account</Link>
+        <Link href="/attributes" className="rounded-lg bg-primary px-3 py-1 text-black text-sm">Attributes</Link>
       )}
     </div>
   )

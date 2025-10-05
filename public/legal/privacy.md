@@ -1,6 +1,6 @@
 # Privacy Policy
 
-_Last updated: [Date]_
+_Last updated: [04-Oct-2025]_
 
 This Privacy Policy explains how **Programvooralle (trading as SuperselfieAI)** (“we”, “our”, “us”) collects and processes personal data when you use our Services.
 
@@ -81,6 +81,6 @@ We may update this Privacy Policy from time to time. The latest version will alw
 
 ## 10. Contact
 **Programvooralle (trading as SuperselfieAI)**  
-KVK: [KVK number]  
-Email: [your support email]  
-Website: [superselfieai domain]
+KVK: 93036779  
+Email: contact@superselfieai.com  
+Website: https://superselfieai.com
