@@ -14,9 +14,9 @@ type Props = {
 
 export function SocialLinks({
   className,
-  xUrl = 'https://x.com/yourhandle',
-  igUrl = 'https://instagram.com/yourhandle',
-  rdUrl = 'https://reddit.com/r/yourcommunity',
+  xUrl = 'https://x.com/superselfieai',
+  igUrl = 'https://instagram.com/superselfieai',
+  rdUrl = 'https://www.reddit.com/user/superselfieai/',
 }: Props) {
   const item =
     'flex h-9 w-9 items-center justify-center rounded-xl border border-border/60 bg-card/60 backdrop-blur hover:bg-card hover:border-foreground/30 transition shadow-[0_0_8px_rgba(16,185,129,0.15)]'

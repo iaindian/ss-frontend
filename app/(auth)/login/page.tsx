@@ -1,39 +1,43 @@
-'use client'
+"use client";
 
-import * as React from 'react'
-import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
-import { logger } from '@/lib/logger'
+import * as React from "react";
+import Link from "next/link";
+import { supabase } from "@/lib/supabase";
+import { logger } from "@/lib/logger";
 
 export default function LoginPage() {
-  const [agree, setAgree] = React.useState(false)
-  const [busy, setBusy] = React.useState(false)
-  const [err, setErr] = React.useState<string | null>(null)
+  const [agree, setAgree] = React.useState(false);
+  const [busy, setBusy] = React.useState(false);
+  const [err, setErr] = React.useState<string | null>(null);
 
   async function handleGoogle() {
-    setErr(null)
+    setErr(null);
     if (!agree) {
-      setErr('You must agree to the Terms to continue.')
-      return
+      setErr("You must agree to the Terms to continue.");
+      return;
     }
-    try {
-      setBusy(true)
-      logger.info('auth.google.start')
 
-      // If you already configured redirect in Supabase console you can omit 'options'
+    try {
+      setBusy(true);
+      const redirectTo =
+        typeof window !== "undefined"
+          ? `${window.location.origin}/auth/callback`
+          : `${
+              process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+            }/auth/callback`;
+console.log("Redirect to si:",redirectTo)
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
+        provider: "google",
         options: {
-          // Change to your deployed URL:
-          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback`,
-          queryParams: { prompt: 'select_account' },
+          redirectTo, // <-- matches Supabase Redirect URLs
+          queryParams: { prompt: "select_account" },
         },
-      })
-      if (error) throw error
+      });
+      if (error) throw error;
     } catch (e: any) {
-      logger.error('auth.google.error', { message: e?.message })
-      setErr(e?.message || 'Sign in failed')
-      setBusy(false)
+      logger.error("auth.google.error", { message: e?.message });
+      setErr(e?.message || "Sign in failed");
+      setBusy(false);
     }
   }
 
@@ -62,14 +66,21 @@ export default function LoginPage() {
             aria-label="Agree to Terms"
           />
           <span className="text-sm leading-5">
-            I agree to the{' '}
-            <Link href="/legal/terms" className="underline decoration-emerald-400/70 hover:opacity-90">
+            I agree to the{" "}
+            <Link
+              href="/legal/terms"
+              className="underline decoration-emerald-400/70 hover:opacity-90"
+            >
               Terms & Agreement
-            </Link>{' '}
-            and{' '}
-            <Link href="/legal/privacy" className="underline decoration-emerald-400/70 hover:opacity-90">
+            </Link>{" "}
+            and{" "}
+            <Link
+              href="/legal/privacy"
+              className="underline decoration-emerald-400/70 hover:opacity-90"
+            >
               Privacy Policy
-            </Link>.
+            </Link>
+            .
           </span>
         </label>
 
@@ -92,14 +103,13 @@ export default function LoginPage() {
                      shadow-[0_0_14px_rgba(16,185,129,0.15)]"
           aria-label="Sign in with Google"
         >
-          <svg
-            aria-hidden
-            viewBox="0 0 24 24"
-            className="h-5 w-5"
-          >
-            <path fill="#EA4335" d="M12 10.2v3.6h5.1c-.2 1.2-1.5 3.5-5.1 3.5-3.1 0-5.6-2.6-5.6-5.7S8.9 5.9 12 5.9c1.8 0 3 .8 3.7 1.5l2.5-2.4C16.8 3.6 14.6 2.7 12 2.7 6.9 2.7 2.7 6.9 2.7 12s4.2 9.3 9.3 9.3c5.4 0 9-3.8 9-9.1 0-.6 0-1-.1-1.5H12z"/>
+          <svg aria-hidden viewBox="0 0 24 24" className="h-5 w-5">
+            <path
+              fill="#EA4335"
+              d="M12 10.2v3.6h5.1c-.2 1.2-1.5 3.5-5.1 3.5-3.1 0-5.6-2.6-5.6-5.7S8.9 5.9 12 5.9c1.8 0 3 .8 3.7 1.5l2.5-2.4C16.8 3.6 14.6 2.7 12 2.7 6.9 2.7 2.7 6.9 2.7 12s4.2 9.3 9.3 9.3c5.4 0 9-3.8 9-9.1 0-.6 0-1-.1-1.5H12z"
+            />
           </svg>
-          {busy ? 'Redirecting…' : 'Continue with Google'}
+          {busy ? "Redirecting…" : "Continue with Google"}
           {!agree && (
             <span className="absolute right-3 text-[10px] uppercase tracking-wide text-amber-300/80">
               requires agreement
@@ -113,5 +123,5 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
-  )
+  );
 }

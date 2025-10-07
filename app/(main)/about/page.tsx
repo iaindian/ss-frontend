@@ -13,13 +13,22 @@
 // }
 
 // app/(main)/about/page.tsx
-'use client'
+"use client";
 
-import * as React from 'react'
-import Link from 'next/link'
-import { ArrowRight, ShieldCheck, Sparkles, Zap, Users, Palette, Clock, Building2 } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import * as React from "react";
+import Link from "next/link";
+import {
+  ArrowRight,
+  ShieldCheck,
+  Sparkles,
+  Zap,
+  Users,
+  Palette,
+  Clock,
+  Building2,
+} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 // import { Separator } from '@/components/ui/separator'
 
 export default function AboutPage() {
@@ -38,17 +47,34 @@ export default function AboutPage() {
               SuperSelfieAI — your personal AI photo studio
             </h1>
             <p className="text-sm md:text-base opacity-80 max-w-2xl">
-              We transform a single reference photo into high-quality, social-ready image packs. 
-              Reliable, fast, and built with safety and consent at the core.
+              We transform a single reference photo into high-quality,
+              social-ready image packs. Reliable, fast, and built with safety
+              and consent at the core.
             </p>
             <div className="flex gap-3">
-              <Link href="/#packs"><Button>Explore Packs <ArrowRight className="ml-1.5 h-4 w-4" /></Button></Link>
-              <Link href="/tutorial"><Button variant="outline">How it works</Button></Link>
+              <Link href="/#packs">
+                <Button>
+                  Explore Packs <ArrowRight className="ml-1.5 h-4 w-4" />
+                </Button>
+              </Link>
+              <Link href="/tutorial">
+                <Button variant="outline">How it works</Button>
+              </Link>
             </div>
           </div>
           <div className="grid grid-cols-3 gap-3 min-w-[260px]">
-            {['/hero1.png','/hero2.jpg','/hero3.png','/hero4.png','/hero5.png','/hero6.png'].map((src,i)=>(
-              <div key={i} className="aspect-square overflow-hidden rounded-xl border border-border/60">
+            {[
+              "/hero1.png",
+              "/hero2.jpg",
+              "/hero3.png",
+              "/hero4.png",
+              "/hero5.png",
+              "/hero6.png",
+            ].map((src, i) => (
+              <div
+                key={i}
+                className="aspect-square overflow-hidden rounded-xl border border-border/60"
+              >
                 <img src={src} alt="" className="h-full w-full object-cover" />
               </div>
             ))}
@@ -58,18 +84,41 @@ export default function AboutPage() {
 
       {/* Pillars */}
       <section className="grid md:grid-cols-3 gap-4">
-        <Card><CardContent className="p-5 space-y-2">
-          <div className="flex items-center gap-2"><Sparkles className="h-4 w-4 text-emerald-300" /><h3 className="font-medium">Studio-grade results</h3></div>
-          <p className="text-sm opacity-75">Consistent looks across 10–20 prompts per pack. Tuned for faces, skin, and lighting.</p>
-        </CardContent></Card>
-        <Card><CardContent className="p-5 space-y-2">
-          <div className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-emerald-300" /><h3 className="font-medium">Built-in safety</h3></div>
-          <p className="text-sm opacity-75">Explicit consent, face checks, easy deletion, and moderation guardrails.</p>
-        </CardContent></Card>
-        <Card><CardContent className="p-5 space-y-2">
-          <div className="flex items-center gap-2"><Clock className="h-4 w-4 text-emerald-300" /><h3 className="font-medium">Fast delivery</h3></div>
-          <p className="text-sm opacity-75">Jobs queue instantly. Email + ZIP download when complete.</p>
-        </CardContent></Card>
+        <Card>
+          <CardContent className="p-5 space-y-2">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-emerald-300" />
+              <h3 className="font-medium">Studio-grade results</h3>
+            </div>
+            <p className="text-sm opacity-75">
+              Consistent looks across 10–20 prompts per pack. Tuned for faces,
+              skin, and lighting.
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-5 space-y-2">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-emerald-300" />
+              <h3 className="font-medium">Built-in safety</h3>
+            </div>
+            <p className="text-sm opacity-75">
+              Explicit consent, face checks, easy deletion, and moderation
+              guardrails.
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-5 space-y-2">
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-emerald-300" />
+              <h3 className="font-medium">Fast delivery</h3>
+            </div>
+            <p className="text-sm opacity-75">
+              Jobs queue instantly. Email + ZIP download when complete.
+            </p>
+          </CardContent>
+        </Card>
       </section>
 
       {/* How it works */}
@@ -82,67 +131,134 @@ export default function AboutPage() {
           </li>
           <li className="rounded-xl border border-border/70 bg-background/40 p-4">
             <div className="font-medium mb-1">2) Upload reference</div>
-            <p className="opacity-75">Face-check runs client-side, then securely stored.</p>
+            <p className="opacity-75">
+              Face-check runs client-side, then securely stored.
+            </p>
           </li>
           <li className="rounded-xl border border-border/70 bg-background/40 p-4">
             <div className="font-medium mb-1">3) Pick a pack</div>
-            <p className="opacity-75">We combine your attributes + pack prompts to create a job.</p>
+            <p className="opacity-75">
+              We combine your attributes + pack prompts to create a job.
+            </p>
           </li>
           <li className="rounded-xl border border-border/70 bg-background/40 p-4">
             <div className="font-medium mb-1">4) Receive images</div>
-            <p className="opacity-75">We email you when ready. Preview or download ZIP.</p>
+            <p className="opacity-75">
+              We email you when ready. Preview or download ZIP.
+            </p>
           </li>
         </ol>
       </section>
 
       {/* Why now / Market */}
       <section className="grid md:grid-cols-2 gap-6">
-        <Card><CardContent className="p-6 space-y-2">
-          <div className="flex items-center gap-2"><Palette className="h-4 w-4 text-emerald-300" /><h3 className="font-medium">Why now</h3></div>
-          <p className="text-sm opacity-80">
-            Foundation models hit consumer quality, creators need fast iteration,
-            and everyone wants professional-looking visuals without a studio.
-            SuperSelfieAI packages this into a simple, safe product.
-          </p>
-        </CardContent></Card>
-        <Card><CardContent className="p-6 space-y-2">
-          <div className="flex items-center gap-2"><Users className="h-4 w-4 text-emerald-300" /><h3 className="font-medium">For creators & brands</h3></div>
-          <p className="text-sm opacity-80">
-            Individuals, creators, and small teams use our packs for profiles,
-            campaigns, thumbnails, and personal branding—at a fraction of studio time.
-          </p>
-        </CardContent></Card>
+        <Card>
+          <CardContent className="p-6 space-y-2">
+            <div className="flex items-center gap-2">
+              <Palette className="h-4 w-4 text-emerald-300" />
+              <h3 className="font-medium">Why now</h3>
+            </div>
+            <p className="text-sm opacity-80">
+              Foundation models hit consumer quality, creators need fast
+              iteration, and everyone wants professional-looking visuals without
+              a studio. SuperSelfieAI packages this into a simple, safe product.
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6 space-y-2">
+            <div className="flex items-center gap-2">
+              <Users className="h-4 w-4 text-emerald-300" />
+              <h3 className="font-medium">For creators & brands</h3>
+            </div>
+            <p className="text-sm opacity-80">
+              Individuals, creators, and small teams use our packs for profiles,
+              campaigns, thumbnails, and personal branding—at a fraction of
+              studio time.
+            </p>
+          </CardContent>
+        </Card>
       </section>
 
       {/* Trust & Safety */}
       <section className="rounded-2xl border border-border bg-card/60 p-6 md:p-8">
         <h2 className="text-xl font-semibold mb-2">Trust & Safety</h2>
         <p className="text-sm opacity-80 mb-4">
-          Safety is built into the product. We only generate using the owner’s reference image and attributes.
-          Users can delete data at any time. We moderate uploads, rate-limit abuse, and honor GDPR requests.
+          Safety is built into the product. We only generate using the owner’s
+          reference image and attributes. Users can delete data at any time. We
+          moderate uploads, rate-limit abuse, and honor GDPR requests.
         </p>
         <div className="flex flex-wrap gap-3 text-xs opacity-80">
-          <span className="rounded-lg border border-border/60 bg-background/50 px-3 py-1">Consent-first</span>
-          <span className="rounded-lg border border-border/60 bg-background/50 px-3 py-1">Face checks</span>
-          <span className="rounded-lg border border-border/60 bg-background/50 px-3 py-1">Deletion & export</span>
-          <span className="rounded-lg border border-border/60 bg-background/50 px-3 py-1">EU-friendly</span>
+          <span className="rounded-lg border border-border/60 bg-background/50 px-3 py-1">
+            Consent-first
+          </span>
+          <span className="rounded-lg border border-border/60 bg-background/50 px-3 py-1">
+            Face checks
+          </span>
+          <span className="rounded-lg border border-border/60 bg-background/50 px-3 py-1">
+            Deletion & export
+          </span>
+          <span className="rounded-lg border border-border/60 bg-background/50 px-3 py-1">
+            EU-friendly
+          </span>
         </div>
+      </section>
+
+      {/* Differentiation / Why we’re unique */}
+      <section className="rounded-2xl border border-border bg-card/60 p-6 md:p-8">
+        <h2 className="text-xl font-semibold mb-3">
+          What makes SuperSelfieAI different
+        </h2>
+        <p className="text-sm opacity-80 mb-5">
+          Most AI image generators rely on complex prompts or generic templates
+          that struggle with realism and identity consistency. SuperSelfieAI
+          focuses on one thing {" "}
+          <strong>extreme photorealism with zero friction</strong>.
+        </p>
+        <ul className="space-y-3 text-sm opacity-80">
+          <li>
+            <strong>Pack-based simplicity:</strong> No prompt engineering, no
+            LoRAs. Just upload one clear face photo, set your attributes, and
+            pick a style pack  our workflow handles the rest.
+          </li>
+          <li>
+            <strong>True photorealism:</strong> Our workflow is tuned to
+            preserve natural lighting, skin tone, and fine detail. Faces look
+            real not over-smoothed or plastic.
+          </li>
+          <li>
+            <strong>Unique outputs:</strong> We don’t reuse or face-swap. Every
+            image in a pack is generated individually, guided by the pack’s
+            styling while staying true to your features.
+          </li>
+        </ul>
+        <p className="text-sm opacity-80 mt-5">
+          The result is a personal AI photoshoot that feels authentic
+          consistent identity, professional composition, and lifelike detail
+          across every image.
+        </p>
       </section>
 
       {/* Metrics / social proof (leave as honest placeholders until you have numbers) */}
       <section className="grid md:grid-cols-3 gap-4">
-        <Card><CardContent className="p-6 text-center">
-          <div className="text-3xl font-semibold">99.9%</div>
-          <div className="text-xs opacity-70 mt-1">Uptime (last 30d)</div>
-        </CardContent></Card>
-        <Card><CardContent className="p-6 text-center">
-          <div className="text-3xl font-semibold">24h</div>
-          <div className="text-xs opacity-70 mt-1">Avg. response time</div>
-        </CardContent></Card>
-        <Card><CardContent className="p-6 text-center">
-          <div className="text-3xl font-semibold">50+</div>
-          <div className="text-xs opacity-70 mt-1">Packs & styles</div>
-        </CardContent></Card>
+        <Card>
+          <CardContent className="p-6 text-center">
+            <div className="text-3xl font-semibold">99.9%</div>
+            <div className="text-xs opacity-70 mt-1">Uptime (last 30d)</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6 text-center">
+            <div className="text-3xl font-semibold">24h</div>
+            <div className="text-xs opacity-70 mt-1">Avg. response time</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6 text-center">
+            <div className="text-3xl font-semibold">50+</div>
+            <div className="text-xs opacity-70 mt-1">Packs & styles</div>
+          </CardContent>
+        </Card>
       </section>
 
       {/* <Separator /> */}
@@ -155,13 +271,20 @@ export default function AboutPage() {
             <h2 className="text-xl font-semibold">Company</h2>
           </div>
           <p className="text-sm opacity-80">
-            SuperSelfieAI is a product-focused company building human-centric AI imaging.
-            We ship fast, listen closely to creators, and keep safety non-negotiable.
+            SuperSelfieAI is a product-focused company building human-centric AI
+            imaging. We ship fast, listen closely to creators, and keep safety
+            non-negotiable.
           </p>
           <div className="flex gap-3">
-            <Link href="/legal/privacy"><Button variant="outline">Privacy</Button></Link>
-            <Link href="/legal/terms"><Button variant="outline">Terms</Button></Link>
-            <Link href="/support"><Button variant="outline">Support</Button></Link>
+            <Link href="/legal/privacy">
+              <Button variant="outline">Privacy</Button>
+            </Link>
+            <Link href="/legal/terms">
+              <Button variant="outline">Terms</Button>
+            </Link>
+            <Link href="/support">
+              <Button variant="outline">Support</Button>
+            </Link>
           </div>
         </div>
 
@@ -169,8 +292,9 @@ export default function AboutPage() {
           <CardContent className="p-6 space-y-3">
             <h3 className="font-medium">For investors & partners</h3>
             <p className="text-sm opacity-80">
-              We’re consolidating AI imaging into a premium, safe consumer experience and 
-              a lightweight pro workflow. If you’re exploring the space, we’d love to talk.
+              We’re consolidating AI imaging into a premium, safe consumer
+              experience and a lightweight pro workflow. If you’re exploring the
+              space, we’d love to talk.
             </p>
             <div className="flex gap-3">
               <a href="mailto:contact@superselfieai.com" className="w-full">
@@ -182,5 +306,5 @@ export default function AboutPage() {
         </Card>
       </section>
     </div>
-  )
+  );
 }

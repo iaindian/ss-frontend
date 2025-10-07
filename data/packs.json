@@ -1,13 +1,6 @@
 {
-  "generatedAt": 1759703583554,
+  "generatedAt": 1759842807024,
   "packs": [
-    {
-      "id": "cf542a8f-9a60-4615-bed4-ae52900a942c",
-      "slug": "fitness-1",
-      "title": "Test1",
-      "description": "Fitness",
-      "updated_at": null
-    },
     {
       "id": "29588ffd-e1db-40a0-bb88-bed36054f822",
       "slug": "yoga-girl-1",

@@ -6,6 +6,7 @@ import { Heart, MessageCircle, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn, cents } from "@/lib/utils";
 import type { Pack } from "@/lib/types";
+import { gaEvent } from '@/lib/gtag'
 
 type RailProps = {
   title: string;
@@ -19,14 +20,26 @@ type RailProps = {
 };
 
 const NAMES = [
-  "Sophia Martin","Chloe Anderson","Lily Collins","Maya Khan","Ava Thompson",
-  "Zoe Nguyen","Emma Brooks","Nora Patel","Grace Li","Isla Carter","Elena Rossi","Mila Novak"
+  "Sophia Martin",
+  "Chloe Anderson",
+  "Lily Collins",
+  "Maya Khan",
+  "Ava Thompson",
+  "Zoe Nguyen",
+  "Emma Brooks",
+  "Nora Patel",
+  "Grace Li",
+  "Isla Carter",
+  "Elena Rossi",
+  "Mila Novak",
 ];
 
 function rand(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-function sample<T>(arr: T[]) { return arr[rand(0, arr.length - 1)]; }
+function sample<T>(arr: T[]) {
+  return arr[rand(0, arr.length - 1)];
+}
 
 export function SectionSocialRail({
   title,
@@ -56,7 +69,7 @@ export function SectionSocialRail({
 
     const scrollStep = () => {
       if (paused) return;
-      const firstCard = el.querySelector<HTMLElement>('[data-card]');
+      const firstCard = el.querySelector<HTMLElement>("[data-card]");
       const gap = 24; // matches "gap-6" below (6 * 4px)
       const w = (firstCard?.offsetWidth || 280) + gap;
 
@@ -135,7 +148,7 @@ function PackSocialCard({
 
   // Per-card image carousel every 2s (pauses when rail is paused or user interacts)
   React.useEffect(() => {
-    if (paused || isSlideDisabled ) return;
+    if (paused || isSlideDisabled) return;
     const id = window.setInterval(() => {
       setIdx((n) => (n + 1) % imgs.length);
     }, 4000);
@@ -144,7 +157,14 @@ function PackSocialCard({
 
   const name = React.useMemo(() => sample(NAMES), []);
   const caption = React.useMemo(
-    () => ["New drop 💫", "Travel vibes ✈️", "Golden hour 🌅", "Studio day 🎬", "If you know, you know 😉"][rand(0, 4)],
+    () =>
+      [
+        "New drop 💫",
+        "Travel vibes ✈️",
+        "Golden hour 🌅",
+        "Studio day 🎬",
+        "If you know, you know 😉",
+      ][rand(0, 4)],
     []
   );
   const likes = React.useMemo(() => rand(5200, 120000), []);
@@ -189,31 +209,40 @@ function PackSocialCard({
         </Link>
       </div> */}
       <div className="px-4 pt-3">
-        <Link href={`/packs/${pack.slug || pack.id}`} prefetch={false}>
-            <div className="aspect-[4/5] w-full overflow-hidden rounded-xl border border-white/10">
+        <Link
+          href={`/packs/${pack.slug || pack.id}`}
+          prefetch={false}
+          onClick={() =>
+            gaEvent({
+              action: "view_pack_click",
+              category: "engagement",
+              params: { pack_id: pack.id, pack_slug: pack.slug },
+            })
+          }
+        >
+          <div className="aspect-[4/5] w-full overflow-hidden rounded-xl border border-white/10">
             <div
-                // className="flex h-full w-full transition-transform duration-500 ease-out will-change-transform"
-                className="flex h-full w-full transition-transform duration-700 ease-[cubic-bezier(.22,.61,.36,1)] will-change-transform"
-
-                style={{ transform: `translateX(-${idx * 100}%)` }}
-                onMouseEnter={interact}
-                onTouchStart={interact}
+              // className="flex h-full w-full transition-transform duration-500 ease-out will-change-transform"
+              className="flex h-full w-full transition-transform duration-700 ease-[cubic-bezier(.22,.61,.36,1)] will-change-transform"
+              style={{ transform: `translateX(-${idx * 100}%)` }}
+              onMouseEnter={interact}
+              onTouchStart={interact}
             >
-                {imgs.map((src, i) => (
+              {imgs.map((src, i) => (
                 <div key={i} className="min-w-full h-full">
-                    <img
+                  <img
                     src={src}
                     alt={`${pack.title} ${i + 1}`}
                     className="h-full w-full object-cover select-none pointer-events-none"
                     draggable={false}
                     loading={i === 0 ? "eager" : "lazy"}
-                    />
+                  />
                 </div>
-                ))}
+              ))}
             </div>
-            </div>
+          </div>
         </Link>
-        </div>
+      </div>
 
       {/* actions row */}
       <div className="flex items-center justify-between px-4 py-3">

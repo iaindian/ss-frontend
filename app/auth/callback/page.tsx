@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { Api } from '@/lib/api'
 import { logger } from '@/lib/logger'
+import { gaEvent } from '@/lib/gtag';
 
 function getTimezone(): string {
   try {
@@ -49,6 +50,7 @@ export default function AuthCallback() {
             timezone: getTimezone(),
           }
           await Api.authUpsert(body)
+          gaEvent({ action: 'login', category: 'auth', label: 'google' })
           logger.info('auth.upsert.success', { email: user.email })
         } catch (e: any) {
           // Don't block the user if the upsert fails—log it, tell them lightly

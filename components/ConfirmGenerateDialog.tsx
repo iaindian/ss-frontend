@@ -2,6 +2,7 @@
 import * as React from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { gaEvent } from '@/lib/gtag';
 
 type Attrs = Record<string, any> | null | undefined
 
@@ -30,6 +31,7 @@ export function ConfirmGenerateDialog(props: {
     try {
       setBusy(true)
       await onConfirm()
+      gaEvent({ action: 'generate_pack_confirm', category: 'engagement', params: { packTitle } });
     } finally {
       setBusy(false)
       onOpenChange(false)

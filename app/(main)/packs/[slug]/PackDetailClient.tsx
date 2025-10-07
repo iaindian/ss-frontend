@@ -13,6 +13,7 @@ import { ErrorView } from "@/components/ErrorView";
 import { PackGallery } from "@/components/PackGallery";
 import { SocialPreviewDialog } from "@/components/SocialPreview";
 import { getStripe } from "@/lib/stripe";
+import { gaEvent } from '@/lib/gtag'
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth"; // if not already present
 import { ConfirmGenerateDialog } from "@/components/ConfirmGenerateDialog";
@@ -34,6 +35,7 @@ export default function PackDetailPage({ slug: propSlug }: Props) {
   const { me } = useAuth();
   const [confirmOpen, setConfirmOpen] = React.useState(false);
   const [referenceUrl, setRefUrl] = React.useState<string | null>(null);
+  const sentView = React.useRef<string | null>(null)
 
   React.useEffect(() => {
     let dead = false;
@@ -81,6 +83,14 @@ export default function PackDetailPage({ slug: propSlug }: Props) {
               slug,
               via: "getPacks-fallback",
             });
+            const key = `${p.id}:${p.slug}`
+            if (sentView.current === key) return
+            sentView.current = key
+            gaEvent({
+              action: 'view_pack',
+              category: 'engagement',
+              params: { pack_id: p.id, p_slug: p.slug },
+            })
           }
         } catch (e) {
           throw e;
