@@ -6,9 +6,14 @@
     "cleanUrls": true,
     "rewrites": [
       { "source": "/_next/**", "destination": "/_next/$1" },
+      { "source": "/packs/**", "destination": "/packs.html" },
       { "source": "**", "destination": "/index.html" }
     ],
     "headers": [
+       {
+        "source": "/packs.html",
+        "headers": [{ "key": "x-debug", "value": "packs-shell" }]
+      },
       {
         "source": "/_next/static/**",
         "headers": [
@@ -26,6 +31,10 @@
         "headers": [
           { "key": "Cache-Control", "value": "public, max-age=86400" }
         ]
+      },
+      {
+        "source": "**/*.html",
+        "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }]
       },
       {
         "source": "**",

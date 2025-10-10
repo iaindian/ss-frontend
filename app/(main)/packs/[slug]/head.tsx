@@ -27,8 +27,6 @@ async function getAllPacks(): Promise<Pack[]> {
   try {
     const res = await fetch(`${API_BASE}/packs`, { cache: "force-cache" });
     const data = await res.json(); // read once
-    // console.log("res is", data);
-    // console.log(res.ok, res.status);
     return data;
   } catch (err) {
     console.log(err);

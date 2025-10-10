@@ -1,4 +1,4 @@
-// app/(main)/packs/[slug]/PackDetailClient.tsx
+// app/(main)/packs/[slug]/page.tsx
 "use client";
 
 import * as React from "react";
@@ -13,43 +13,30 @@ import { ErrorView } from "@/components/ErrorView";
 import { PackGallery } from "@/components/PackGallery";
 import { SocialPreviewDialog } from "@/components/SocialPreview";
 import { getStripe } from "@/lib/stripe";
-import { gaEvent } from "@/lib/gtag";
+import { gaEvent } from '@/lib/gtag'
 import Link from "next/link";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth"; // if not already present
 import { ConfirmGenerateDialog } from "@/components/ConfirmGenerateDialog";
 
-type Props = {
-  /** when used as fallback from /packs, you can pass the slug explicitly */
-  slug?: string;
-  /** when provided, we skip the first fetch */
-  initialPack?: Pack | null;
-};
+type Props = { slug?: string , initialPack?: Pack | null;};
 
-export default function PackDetailClient({
-  slug: propSlug,
-  initialPack,
-}: Props) {
+export default function PackDetailPage({ slug: propSlug, initialPack  }: Props) {
   const { slug: routeSlug } = useParams<{ slug: string }>();
-  const slug = propSlug ?? routeSlug; // prefer prop (fallback) else URL param
+  const slug = propSlug ?? routeSlug; // prefer prop, else URL param
 
   const router = useRouter();
   const { attributes, hasAttributes } = useAttributes();
 
-  // ✅ seed state from initialPack if provided
-  const [pack, setPack] = React.useState<Pack | null>(initialPack ?? null);
-  // const [loading, setLoading] = React.useState<boolean>(!initialPack);
-  const [loading, setLoading] = React.useState<boolean>(!initialPack && !!slug);
+  const [pack, setPack] = React.useState<Pack | null>(null);
+  const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const [previewOpen, setPreviewOpen] = React.useState(false);
   const [buying, setBuying] = React.useState(false);
   const { me } = useAuth();
   const [confirmOpen, setConfirmOpen] = React.useState(false);
   const [referenceUrl, setRefUrl] = React.useState<string | null>(null);
-  const sentView = React.useRef<string | null>(null);
+  const sentView = React.useRef<string | null>(null)
 
-  if (!slug) return <ErrorView description="Pack not found" />;
-
-  // fetch profile once (reference image url)
   React.useEffect(() => {
     let dead = false;
     (async () => {
@@ -57,7 +44,7 @@ export default function PackDetailClient({
         const res = await Api.getMyProfile();
         if (!dead) setRefUrl(res?.reference_image_url || null);
       } catch {
-        /* ignore */
+        // ignore
       }
     })();
     return () => {
@@ -65,27 +52,8 @@ export default function PackDetailClient({
     };
   }, []);
 
-  // main loader (skips when initialPack matches)
   React.useEffect(() => {
     let mounted = true;
-
-    // if a matching initialPack was supplied, fire analytics and bail
-    if (initialPack && initialPack.slug === slug) {
-      const key = `${(initialPack as any).id}:${initialPack.slug}`;
-      if (sentView.current !== key) {
-        sentView.current = key;
-        gaEvent({
-          action: "view_pack",
-          category: "engagement",
-          params: {
-            pack_id: (initialPack as any).id,
-            p_slug: initialPack.slug,
-          },
-        });
-      }
-      return;
-    }
-
     async function load() {
       try {
         setError(null);
@@ -97,56 +65,48 @@ export default function PackDetailClient({
           if (p && mounted) {
             setPack(p as Pack);
             logger.info("pack.detail.loaded", { slug, via: "getPack" });
-
-            const key = `${(p as any).id}:${(p as any).slug}`;
-            if (sentView.current !== key) {
-              sentView.current = key;
-              gaEvent({
-                action: "view_pack",
-                category: "engagement",
-                params: { pack_id: (p as any).id, p_slug: (p as any).slug },
-              });
-            }
             return;
           }
         } catch {
-          /* fall through */
+          /* fall through to list */
         }
 
-        // 2) Fallback to list → find by slug
-        const res: any = await (Api as any).getPacks?.();
-        const list: Pack[] = Array.isArray(res) ? res : res?.items ?? [];
-        const p =
-          list.find((x) => x.slug === slug || (x as any).id === slug) || null;
-        if (!p) throw new Error("Pack not found");
-
-        if (mounted) {
-          setPack(p);
-          logger.info("pack.detail.loaded", { slug, via: "getPacks-fallback" });
-
-          const key = `${(p as any).id}:${(p as any).slug}`;
-          if (sentView.current !== key) {
-            sentView.current = key;
-            gaEvent({
-              action: "view_pack",
-              category: "engagement",
-              params: { pack_id: (p as any).id, p_slug: (p as any).slug },
+        // 2) Fallback: list packs and find by slug (supports both array & paginated shapes)
+        try {
+          const res: any = await (Api as any).getPacks?.();
+          const list: Pack[] = Array.isArray(res) ? res : res?.items ?? []; // if Paginated<{items: Pack[]}>
+          const p = list.find((x) => x.slug === slug || x.id === slug) || null;
+          if (!p) throw new Error("Pack not found");
+          if (mounted) {
+            setPack(p);
+            logger.info("pack.detail.loaded", {
+              slug,
+              via: "getPacks-fallback",
             });
+            const key = `${p.id}:${p.slug}`
+            if (sentView.current === key) return
+            sentView.current = key
+            gaEvent({
+              action: 'view_pack',
+              category: 'engagement',
+              params: { pack_id: p.id, p_slug: p.slug },
+            })
           }
+        } catch (e) {
+          throw e;
         }
       } catch (e: any) {
         setError(e?.message || "Failed to load pack");
         logger.error("pack.detail.error", { slug, error: e?.message });
       } finally {
-        if (mounted) setLoading(false);
+        setLoading(false);
       }
     }
-
     load();
     return () => {
       mounted = false;
     };
-  }, [slug, initialPack]);
+  }, [slug]);
 
   function openConfirm() {
     if (!me) {
@@ -154,6 +114,7 @@ export default function PackDetailClient({
       window.location.href = "/login";
       return;
     }
+
     if (!hasAttributes || !referenceUrl) {
       alert(
         !hasAttributes
@@ -170,11 +131,8 @@ export default function PackDetailClient({
     if (!pack) return;
     setBuying(true);
     try {
-      const res: any = await Api.createOrder({ pack_id: (pack as any).id });
-      logger.info("order.created", {
-        order_id: res?.id,
-        pack_id: (pack as any).id,
-      });
+      const res: any = await Api.createOrder({ pack_id: pack.id });
+      logger.info("order.created", { order_id: res?.id, pack_id: pack.id });
       if (res?.checkout_url) {
         window.location.href = res.checkout_url;
         return;
@@ -195,7 +153,6 @@ export default function PackDetailClient({
   }
 
   if (loading) return <div className="p-6">Loading pack…</div>;
-  // if (error || !pack) return <ErrorView description={error || "Not found" />} ;
   if (error || !pack) return <ErrorView description={error || "Not found"} />;
 
   return (
@@ -203,19 +160,19 @@ export default function PackDetailClient({
       {/* LEFT: Hero / details */}
       <div className="md:col-span-2 space-y-4">
         <div className="rounded-2xl border border-border bg-card p-3">
-          <PackGallery images={(pack as any)?.preview_images ?? []} />
+          {/* 👇 keeps your preview behavior intact */}
+          <PackGallery images={pack.preview_images || []} />
+          {/* <SocialRail images={pack.preview_images || []} /> */}
         </div>
 
         <div className="rounded-2xl border border-border bg-card p-4 space-y-2">
           <div className="flex items-start justify-between gap-3">
-            <h1 className="text-2xl font-semibold">
-              {pack?.title ?? "Untitled pack"}
-            </h1>
+            <h1 className="text-2xl font-semibold">{pack.title}</h1>
             <span className="text-xs uppercase text-foreground/60">
-              {(pack as any)?.category ?? ""}
+              {pack.category}
             </span>
           </div>
-          {pack?.description ? (
+          {pack.description ? (
             <p className="text-sm opacity-90">{pack.description}</p>
           ) : (
             <p className="text-sm opacity-60">
@@ -234,9 +191,7 @@ export default function PackDetailClient({
           <div className="rounded-2xl border border-border bg-card p-4">
             <div className="text-sm opacity-70 mb-1">Price</div>
             <div className="text-xl font-semibold">
-              {pack && (pack as any).price_cents != null
-                ? cents((pack as any).price_cents, (pack as any).currency)
-                : "—"}
+              {cents(pack.price_cents, pack.currency)}
             </div>
             <div className="mt-4 grid gap-2">
               <Button onClick={openConfirm} loading={buying}>
@@ -262,16 +217,17 @@ export default function PackDetailClient({
         </div>
       </div>
 
+      {/* Social preview dialog */}
       <SocialPreviewDialog
         open={previewOpen}
         onOpenChange={setPreviewOpen}
-        images={(pack as any)?.preview_images ?? []}
-        title={pack?.title ?? "Pack"}
+        images={pack.preview_images || []}
+        title={pack.title}
       />
       <ConfirmGenerateDialog
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
-        packTitle={pack?.title ?? 'Selected pack'}
+        packTitle={pack.title}
         attributes={attributes}
         referenceUrl={referenceUrl}
         onConfirm={handleGenerate}

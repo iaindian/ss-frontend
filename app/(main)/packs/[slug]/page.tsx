@@ -6,6 +6,10 @@ import PackDetailClient from './PackDetailClient'
 
 type PackMeta = { slug: string; title: string; description?: string; updated_at?: string | null }
 
+export const runtime = 'nodejs';     // needed since you use `fs`
+export const dynamic = 'error';
+export const dynamicParams = false;
+
 async function readPackList(): Promise<PackMeta[]> {
   try {
     const p = path.join(process.cwd(), 'data', 'packs.json')
@@ -47,3 +51,4 @@ export default function Page({ params }: { params: { slug: string } }) {
   // All interactivity stays in the client component:
   return <PackDetailClient slug={params.slug} />
 }
+

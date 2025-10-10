@@ -6,7 +6,7 @@ import { Heart, MessageCircle, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn, cents } from "@/lib/utils";
 import type { Pack } from "@/lib/types";
-import { gaEvent } from '@/lib/gtag'
+import { gaEvent } from "@/lib/gtag";
 
 type RailProps = {
   title: string;
@@ -17,6 +17,7 @@ type RailProps = {
   /** seconds to keep everything paused after interaction (default 6) */
   resumeAfterSeconds?: number;
   className?: string;
+  freeCredits?: number;
 };
 
 const NAMES = [
@@ -48,6 +49,7 @@ export function SectionSocialRail({
   intervalSeconds = 5,
   resumeAfterSeconds = 6,
   className,
+  freeCredits = 0,
 }: RailProps) {
   const scrollerRef = React.useRef<HTMLDivElement | null>(null);
   const [paused, setPaused] = React.useState(false);
@@ -120,6 +122,7 @@ export function SectionSocialRail({
               paused={paused}
               onGenerate={() => onGenerate(p)}
               onInteract={pauseAll}
+              freeCredits={freeCredits}
             />
           ))}
         </div>
@@ -133,9 +136,11 @@ function PackSocialCard({
   paused,
   onGenerate,
   onInteract,
+  freeCredits = 0,
 }: {
   pack: Pack;
   paused: boolean;
+  freeCredits?: number;
   onGenerate: () => void | Promise<void>;
   onInteract?: () => void;
 }) {
@@ -264,11 +269,42 @@ function PackSocialCard({
       {/* footer / CTA */}
       <div className="px-4 pb-4">
         <div className="flex items-center justify-between">
+          {/* price / promo */}
           <div className="text-sm opacity-80">
-            {cents(pack.price_cents, pack.currency)}
+            {freeCredits > 0 ? (
+              <div className="flex items-center gap-2">
+                <span className="line-through opacity-60">
+                  {cents(pack.price_cents, pack.currency)}
+                </span>
+                <span
+                  className="inline-flex items-center rounded-full border border-emerald-400/30
+                       bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-300"
+                  title="You have a free credit available"
+                >
+                  Free credit
+                </span>
+              </div>
+            ) : (
+              <span className="font-medium">
+                {cents(pack.price_cents, pack.currency)}
+              </span>
+            )}
           </div>
-          <Button size="sm" className="h-8 px-3 text-xs" onClick={onGenerate}>
-            Generate
+
+          {/* CTA */}
+          <Button
+            size="sm"
+            className={`h-8 px-3 text-xs ${
+              freeCredits > 0
+                ? "bg-emerald-500 text-black hover:bg-emerald-500/90 dark:text-emerald-50"
+                : ""
+            }`}
+            onClick={onGenerate}
+            aria-label={
+              freeCredits > 0 ? "Generate free with credit" : "Generate"
+            }
+          >
+            {freeCredits > 0 ? "Generate Free" : "Generate"}
           </Button>
         </div>
       </div>

@@ -7,11 +7,13 @@ import { logger } from '@/lib/logger'
 import { gaEvent } from '@/lib/gtag';
 
 function getTimezone(): string {
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Amsterdam'
-  } catch {
-    return 'Europe/Amsterdam'
-  }
+  return 'Europe/Amsterdam';
+  // Todo
+  // try {
+  //   return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Amsterdam'
+  // } catch {
+  //   return 'Europe/Amsterdam'
+  // }
 }
 
 export default function AuthCallback() {
@@ -40,6 +42,8 @@ export default function AuthCallback() {
       const user = session?.user
       logger.info('auth.callback.session', { authed: !!user })
 
+
+
       // 3) upsert user in your backend (idempotent)
       if (user?.email) {
         try {
@@ -55,6 +59,7 @@ export default function AuthCallback() {
         } catch (e: any) {
           // Don't block the user if the upsert fails—log it, tell them lightly
           logger.error('auth.upsert.error', { error: e?.message })
+          alert(e?.message || "Please reload, or try again")
           // optional: show a non-blocking toast instead of alert
           console.warn('User profile sync failed:', e?.message)
         }
@@ -63,13 +68,15 @@ export default function AuthCallback() {
       const res = await Api.getAttributes()
       const has = !!res?.attributes && Object.keys(res.attributes).length > 0
       if (!has) {
-        router.replace('/attributes?required=1')
+        window.location.replace('/attributes?required=1')
         return
       }
-      } catch {}
+      } catch(e) {
+        logger.error('auth.attribute.error', { error: e?.message })
+      }
 
       // 4) go to a logged-in landing (attributes or home)
-      router.replace('/')
+      window.location.replace('/')
     }
     run()
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -15,12 +15,15 @@ export function usePacks(opts?: { tag?: string; sort?: 'latest'|'featured'|'tren
       const res: any = await (Api as any).getPacks?.(opts)
       const list: Pack[] = Array.isArray(res) ? res : (res?.items ?? [])
       setPacks(list)
+      console.log("Loading is:-",loading)
       logger.info('packs.loaded', { count: list.length })
+      setLoading(false);
     } catch (e: any) {
       setError(e?.message || 'Failed to load packs')
       logger.error('packs.load.error', { error: e?.message })
     } finally {
       setLoading(false)
+      console.log("Loading is:-",loading)
     }
   }, [JSON.stringify(opts)])
 

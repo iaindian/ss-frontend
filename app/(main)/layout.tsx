@@ -1,68 +1,39 @@
 // app/(main)/layout.tsx
-'use client'
-import * as React from 'react'
-import { Suspense, useState } from 'react'
-import { Sidebar } from '@/components/Sidebar'
-import { TopbarMobile } from '@/components/TopbarMobile'
-import MobileSidebar from '@/components/MobileSidebar'
-import ClientToaster from '@/components/ClientToaster'
-import { useAuth } from '@/hooks/useAuth'
-import { logger } from '@/lib/logger'
-import { Api } from '@/lib/api'
-import { CookieBanner } from '@/components/CookieBanner'
+"use client";
+import * as React from "react";
+import { Suspense, useState } from "react";
+import { Sidebar } from "@/components/Sidebar";
+import { TopbarMobile } from "@/components/TopbarMobile";
+import MobileSidebar from "@/components/MobileSidebar";
+import ClientToaster from "@/components/ClientToaster";
+import { useAuth } from "@/hooks/useAuth";
+import { logger } from "@/lib/logger";
+import { Api } from "@/lib/api";
+import { CookieBanner } from "@/components/CookieBanner";
 
+export default function MainLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  // const { me, loading } = useAuth()
+  const { me } = useAuth();
+  const [free_credits, setCredits] = React.useState<number | null>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-// export default function MainLayout({ children }: { children: React.ReactNode }) {
-//   const { me, loading } = useAuth()
-//   const [mobileOpen, setMobileOpen] = useState(false)
-
-//   return (
-//     <>
-//       <div className="flex">
-//         <Sidebar authed={!!me} />
-//         <div className="min-h-screen flex-1 p-4">
-//           <TopbarMobile
-//             authed={!!me}
-//             onMenu={() => { logger.info('topbar.menu'); setMobileOpen(true) }}
-//           />
-//           <div className="mx-auto max-w-6xl pt-2">
-//             {loading ? <div>Loading…</div> : <Suspense fallback={<div>Loading…</div>}>{children}</Suspense>}
-//           </div>
-//         </div>
-//       </div>
-
-//       <MobileSidebar
-//         authed={!!me}
-//         open={mobileOpen}
-//         onClose={() => { logger.info('mobile.close'); setMobileOpen(false) }}
-//       />
-
-//       <ClientToaster />
-//     </>
-//   )
-// }
-
-
-export default function MainLayout({ children }: { children: React.ReactNode }) {
-  const { me, loading } = useAuth()
-  const [free_credits, setRefUrl] = React.useState<number | null>(null)
   React.useEffect(() => {
-        let dead = false
-        ;(async () => {
-          try {
-            const res = await Api.getMyProfile()
-            console.log("res is",res);
-            if (!dead) {
-               console.log("res is",res.free_credits);
-              setRefUrl(res?.free_credits ?? null)
-            }
-            } catch {
-            // ignore
-          }
-        })()
-        return () => { dead = true }
-      }, [])
-  const [mobileOpen, setMobileOpen] = useState(false)
+    let dead = false;
+    (async () => {
+      try {
+        const res: any = await Api.getMyProfile();
+        if (!dead && res) setCredits(Number(res.free_credits || 0));
+      } catch {
+      } 
+    })();
+    return () => {
+      dead = true;
+    };
+  }, []);
 
   return (
     <>
@@ -71,7 +42,10 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         <div className="md:hidden">
           <TopbarMobile
             authed={!!me}
-            onMenu={() => { logger.info('topbar.menu'); setMobileOpen(true) }}
+            onMenu={() => {
+              logger.info("topbar.menu");
+              setMobileOpen(true);
+            }}
           />
         </div>
 
@@ -86,11 +60,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
         {/* Main content – shifted to the right on desktop */}
         <main className="md:ml-64">
-          <div className="mx-auto max-w-6xl p-4">
-            {loading
-              ? <div>Loading…</div>
-              : <Suspense fallback={<div>Loading…</div>}>{children}</Suspense>}
-          </div>
+         <div className="mx-auto max-w-6xl p-4">{children}</div>
         </main>
       </div>
 
@@ -98,12 +68,15 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       <MobileSidebar
         authed={!!me}
         open={mobileOpen}
-        onClose={() => { logger.info('mobile.close'); setMobileOpen(false) }}
+        onClose={() => {
+          logger.info("mobile.close");
+          setMobileOpen(false);
+        }}
         credits={free_credits}
       />
 
       <ClientToaster />
       <CookieBanner />
     </>
-  )
+  );
 }
