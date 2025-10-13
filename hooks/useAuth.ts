@@ -1,14 +1,11 @@
 // hooks/useAuth.ts
 'use client'
 import * as React from 'react'
-import { supabase } from '@/lib/supabase'
+import { Api } from '@/lib/api'
+import type { Me } from '@/lib/types'
 import { logger } from '@/lib/logger'
 
-export type Me = {
-  id: string
-  email: string
-  avatar_url?: string | null
-}
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || ''
 
 export function useAuth() {
   const [me, setMe] = React.useState<Me | null>(null)
@@ -16,51 +13,60 @@ export function useAuth() {
   const [error, setError] = React.useState<string | null>(null)
 
   const refresh = React.useCallback(async () => {
+    setError(null)
     try {
-      setError(null)
-      const { data: { session }, error } = await supabase.auth.getSession()
-      if (error) throw error
-      const user = session?.user || null
-      console.log("user is",user)
-      setMe(user ? {
-        id: user.id,
-        email: user.email || '',
-        avatar_url: user.user_metadata?.avatar_url ?? null,
-      } : null)
-      logger.info('auth.refresh', { authed: !!user })
+      const data = await Api.getMyProfile()               // relies on httpOnly session cookie
+      setMe(data)
+      logger.info('auth.refresh', { email: data?.email })
     } catch (e: any) {
-      setError(e?.message || 'Auth failed')
+      // 401/403 → unauthenticated
       setMe(null)
-      logger.error('auth.refresh.error', { error: e?.message })
+      const msg = e?.message || 'Not signed in'
+      setError(msg)
+      logger.warn('auth.refresh.failed', { msg })
     } finally {
       setLoading(false)
     }
   }, [])
 
+  // Initial load + revalidate when tab regains focus/visibility
   React.useEffect(() => {
-    // initial
-    refresh()
-    // subscribe to auth changes
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, _session) => {
-      refresh()
-    })
-    return () => { sub.subscription.unsubscribe() }
+    let mounted = true
+    ;(async () => mounted && (await refresh()))()
+    const onFocus = () => refresh()
+    const onVis = () => { if (document.visibilityState === 'visible') refresh() }
+    window.addEventListener('focus', onFocus)
+    document.addEventListener('visibilitychange', onVis)
+    return () => { mounted = false; window.removeEventListener('focus', onFocus); document.removeEventListener('visibilitychange', onVis) }
   }, [refresh])
 
-  async function signInWithGoogle() {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: window.location.origin + '/auth/callback' },
-    })
-    if (error) {
-      logger.error('auth.google.error', { error: error.message })
-      throw error
-    }
+  // Start Google OAuth on the backend (PKCE). Backend will set session cookie and redirect back.
+  function signInWithGoogle(next: string = '/attributes') {
+    const nextAbs = `${window.location.origin}${next.startsWith('/') ? next : `/${next}`}`
+    const url = `${API_BASE}/auth/google/start?next=${encodeURIComponent(nextAbs)}`
+    logger.info('auth.google.start', { next: nextAbs })
+    window.location.href = url
   }
 
-  async function signOut() {
-    await supabase.auth.signOut()
-  }
+  // Ask backend to clear the session cookie, then bounce home
+  // async function signOut(redirectTo: string = '/') {
+  //   try {
+  //     // prefer POST if your backend supports it; else a GET that clears cookie + redirects
+  //     await fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' }).catch(() => {})
+  //   } finally {
+  //     setMe(null)
+  //     window.location.href = redirectTo
+  //   }
+  // }
+
+  async function signOut(redirectTo: string = '/') {
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || ''
+  const nextAbs = `${window.location.origin}${redirectTo.startsWith('/') ? redirectTo : `/${redirectTo}`}`
+  // Either method works; GET is simplest since backend redirects after clearing cookie
+  window.location.href =  await `${API_BASE}/auth/logout?next=${encodeURIComponent(nextAbs)}`
+  // setMe(null);
+  // window.location.replace("/")
+}
 
   return { me, loading, error, refresh, signInWithGoogle, signOut }
 }

@@ -25,23 +25,15 @@ export default function LoginPage() {
           : `${
               process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
             }/auth/callback`;
-      console.log("Redirect to si:", redirectTo);
-      // const { error } = await supabase.auth.signInWithOAuth({
-      //   provider: "google",
-      //   options: {
-      //     redirectTo, // <-- matches Supabase Redirect URLs
-      //     queryParams: { prompt: "select_account" },
-      //   },
-      // });
-      // if (error) throw error;
-      debugger
-      const next =
-        typeof window !== "undefined"
-          ? window.location.origin + "/attributes"
-          : "/attributes";
-      window.location.href = `${
-        process.env.NEXT_PUBLIC_API_BASE_URL
-      }/auth/google/start?next=${encodeURIComponent(next)}`;
+console.log("Redirect to si:",redirectTo)
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo, // <-- matches Supabase Redirect URLs
+          queryParams: { prompt: "select_account" },
+        },
+      });
+      if (error) throw error;
     } catch (e: any) {
       logger.error("auth.google.error", { message: e?.message });
       setErr(e?.message || "Sign in failed");

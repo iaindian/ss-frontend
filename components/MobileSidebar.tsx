@@ -8,6 +8,7 @@ import { logger } from '@/lib/logger'
 import { clsxx } from '@/lib/utils'
 import Image from 'next/image'
 import { SocialLinks } from '@/components/SocialLinks'
+import { useAuth } from "@/hooks/useAuth";
 // Icons
 import {
   X,
@@ -54,6 +55,7 @@ export default function MobileSidebar({
 }) {
   const pathname = usePathname()
   const items = authed ? itemsLoggedIn : itemsLoggedOut
+  const { signOut } = useAuth();
 
   async function handleLogout() {
     try {
@@ -149,7 +151,7 @@ export default function MobileSidebar({
         {authed ? (
           <div className="p-3">
             <button
-              onClick={handleLogout}
+              onClick={() => signOut()}
               className="flex w-full items-center gap-2 rounded-xl px-3 py-3 text-left text-sm hover:bg-muted"
             >
               <LogOut className="h-4 w-4" />
