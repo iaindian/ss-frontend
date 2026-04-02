@@ -33,7 +33,7 @@ export function PackCard({ pack, me, onGenerate, variant = 'default' }: Props) {
         <Link href={`/packs/${pack.slug || pack.id}`}>
           <div className={`grid gap-2 ${isCompact ? 'grid-cols-2' : 'grid-cols-3'}`}>
             {(pack.preview_images || []).slice(0, isCompact ? 2 : 3).map((src, i) => (
-              <div key={i} className={`relative w-full overflow-hidden rounded-lg ${isCompact ? 'h-20' : 'h-24'}`}>
+              <div key={i} className="relative aspect-[9/16] w-full overflow-hidden rounded-lg">
                 {/* use img to avoid Next/Image layout constraints here */}
                 <img src={src} alt="preview" className="h-full w-full object-cover" />
               </div>

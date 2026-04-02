@@ -7,13 +7,13 @@ import { logger } from '@/lib/logger'
 import { gaEvent } from '@/lib/gtag';
 
 function getTimezone(): string {
-  return 'Europe/Amsterdam';
-  // Todo
-  // try {
-  //   return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Amsterdam'
-  // } catch {
-  //   return 'Europe/Amsterdam'
-  // }
+  if (typeof window === "undefined") return "UTC";
+
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+  } catch {
+    return "UTC";
+  }
 }
 
 export default function AuthCallback() {

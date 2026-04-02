@@ -29,7 +29,7 @@ const webSiteJsonLd = {
 export default function Head() {
   return (
     <>
-      <title>SuperSelfieAI — AI Image Packs</title>
+      <title>SuperSelfieAI AI Image Packs</title>
       <meta name="description" content="Generate stunning AI selfie packs from your reference photo. Curated styles, fast delivery." />
       <meta name="theme-color" content="#0d0d0d" />
       <meta property="og:site_name" content="SuperSelfieAI" />

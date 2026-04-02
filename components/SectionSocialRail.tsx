@@ -1,9 +1,11 @@
+// components/SectionSocialRail.tsx
 "use client";
 
 import * as React from "react";
 import Link from "next/link";
 import { Heart, MessageCircle, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn, cents } from "@/lib/utils";
 import type { Pack } from "@/lib/types";
 import { gaEvent } from "@/lib/gtag";
@@ -46,12 +48,15 @@ export function SectionSocialRail({
   title,
   packs,
   onGenerate,
-  intervalSeconds = 5,
-  resumeAfterSeconds = 6,
+  intervalSeconds = 7,
+  resumeAfterSeconds = 10,
   className,
   freeCredits = 0,
 }: RailProps) {
+  // We’ll resolve the Radix viewport and store it here for scrolling & listeners
+  const rootRef = React.useRef<HTMLDivElement | null>(null);
   const scrollerRef = React.useRef<HTMLDivElement | null>(null);
+
   const [paused, setPaused] = React.useState(false);
   const resumeTimer = React.useRef<number | null>(null);
 
@@ -60,22 +65,32 @@ export function SectionSocialRail({
     if (resumeTimer.current) window.clearTimeout(resumeTimer.current);
     resumeTimer.current = window.setTimeout(
       () => setPaused(false),
-      resumeAfterSeconds * 1000
+      resumeAfterSeconds * 1000,
     ) as unknown as number;
   }, [resumeAfterSeconds]);
 
+  // Grab the Radix viewport element once the root is mounted
+  React.useEffect(() => {
+    if (!rootRef.current) return;
+    const viewport = rootRef.current.querySelector(
+      "[data-radix-scroll-area-viewport]",
+    ) as HTMLDivElement | null;
+    if (viewport) scrollerRef.current = viewport;
+  }, []);
+
   // Auto-scroll the whole rail by one card width every N seconds
   React.useEffect(() => {
-    if (!scrollerRef.current) return;
     const el = scrollerRef.current;
+    if (!el) return;
 
     const scrollStep = () => {
       if (paused) return;
       const firstCard = el.querySelector<HTMLElement>("[data-card]");
-      const gap = 24; // matches "gap-6" below (6 * 4px)
+      const row = firstCard?.parentElement;
+      const styles = row ? window.getComputedStyle(row) : null;
+      const gap = Number.parseFloat(styles?.columnGap || styles?.gap || "24") || 24;
       const w = (firstCard?.offsetWidth || 280) + gap;
 
-      // loop around
       const max = el.scrollWidth - el.clientWidth;
       if (el.scrollLeft + w >= max - 2) {
         el.scrollTo({ left: 0, behavior: "smooth" });
@@ -88,7 +103,7 @@ export function SectionSocialRail({
     return () => window.clearInterval(id);
   }, [intervalSeconds, paused]);
 
-  // Pause everything on any interaction with the rail
+  // Pause auto-scroll on interaction with the viewport
   React.useEffect(() => {
     const el = scrollerRef.current;
     if (!el) return;
@@ -109,12 +124,16 @@ export function SectionSocialRail({
 
   return (
     <section className={cn("space-y-3", className)}>
-      <h2 className="px-1 text-xl font-semibold">{title}</h2>
-      <div
-        ref={scrollerRef}
-        className="relative -mx-3 overflow-x-auto overflow-y-hidden px-3 py-2 scrollbar-none"
+      <h2 className="px-1 text-lg font-semibold sm:text-xl">{title}</h2>
+
+      {/* Themed horizontal scrollbar via shadcn/Radix */}
+      <ScrollArea
+        ref={rootRef}
+        className="relative -mx-3 px-3 py-2"
+        type="always" // shows tasteful bar (appears on hover)
       >
-        <div className="flex gap-6 pr-6">
+        {/* children go inside the Radix viewport automatically */}
+        <div className="flex gap-3 pb-4 pr-3 sm:gap-6 sm:pb-6 sm:pr-6">
           {packs.map((p) => (
             <PackSocialCard
               key={p.id}
@@ -126,7 +145,8 @@ export function SectionSocialRail({
             />
           ))}
         </div>
-      </div>
+        <ScrollBar orientation="horizontal" className="h-2" />
+      </ScrollArea>
     </section>
   );
 }
@@ -144,14 +164,14 @@ function PackSocialCard({
   onGenerate: () => void | Promise<void>;
   onInteract?: () => void;
 }) {
-  const isSlideDisabled = false; // using this flag to enable disable card slide
+  const isSlideDisabled = false;
   const imgs = (pack.preview_images || []).length
     ? pack.preview_images
     : ["/placeholder.png"];
 
   const [idx, setIdx] = React.useState(0);
 
-  // Per-card image carousel every 2s (pauses when rail is paused or user interacts)
+  // Per-card image carousel
   React.useEffect(() => {
     if (paused || isSlideDisabled) return;
     const id = window.setInterval(() => {
@@ -170,7 +190,7 @@ function PackSocialCard({
         "Studio day 🎬",
         "If you know, you know 😉",
       ][rand(0, 4)],
-    []
+    [],
   );
   const likes = React.useMemo(() => rand(5200, 120000), []);
   const comments = React.useMemo(() => rand(25, 540), []);
@@ -181,39 +201,27 @@ function PackSocialCard({
     <div
       data-card
       className={cn(
-        "w-[280px] shrink-0 rounded-2xl bg-[#0d0f12] border border-white/10",
-        "shadow-[0_10px_30px_rgba(0,0,0,0.45)]"
+        "flex w-[156px] shrink-0 flex-col rounded-xl border border-white/10 bg-[#0d0f12] sm:w-[280px] sm:rounded-2xl",
+        "shadow-[0_10px_30px_rgba(0,0,0,0.45)]",
       )}
       onMouseEnter={interact}
       onTouchStart={interact}
       onPointerDown={interact}
     >
       {/* header */}
-      <div className="flex items-center gap-3 px-4 pt-4">
-        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-emerald-400/60 to-cyan-400/60" />
+      <div className="flex min-h-[42px] items-start gap-2 px-2.5 pt-2.5 sm:min-h-[52px] sm:gap-3 sm:px-4 sm:pt-4">
+        <div className="h-6 w-6 rounded-full bg-gradient-to-br from-emerald-400/60 to-cyan-400/60 sm:h-8 sm:w-8" />
         <div className="flex-1">
-          <div className="text-sm font-semibold">{name}</div>
-          <div className="text-xs text-white/60">{caption}</div>
+          <div className="truncate text-[11px] font-semibold leading-tight sm:text-sm">{name}</div>
+          <div className="truncate text-[10px] text-white/60 sm:text-xs">{caption}</div>
         </div>
-        <div className="text-xs text-white/50">
+        <div className="hidden text-[10px] text-white/50 sm:block sm:text-xs">
           {new Date().toLocaleDateString().slice(0, 6)}
         </div>
       </div>
 
-      {/* image carousel (no rotation, straight card) */}
-      {/* <div className="px-4 pt-3">
-        <Link href={`/packs/${pack.slug || pack.id}`} prefetch={false}>
-          <div className="aspect-[4/5] w-full overflow-hidden rounded-xl border border-white/10">
-            <img
-              key={idx}
-              src={imgs[idx]}
-              alt={pack.title}
-              className="h-full w-full object-cover opacity-0 animate-[fadeIn_300ms_ease_forwards]"
-            />
-          </div>
-        </Link>
-      </div> */}
-      <div className="px-4 pt-3">
+      {/* image carousel */}
+      <div className="px-2.5 pt-2 sm:px-4 sm:pt-3">
         <Link
           href={`/packs/${pack.slug || pack.id}`}
           prefetch={false}
@@ -225,20 +233,19 @@ function PackSocialCard({
             })
           }
         >
-          <div className="aspect-[4/5] w-full overflow-hidden rounded-xl border border-white/10">
+          <div className="aspect-[9/16] w-full overflow-hidden rounded-md border border-white/10 sm:rounded-xl">
             <div
-              // className="flex h-full w-full transition-transform duration-500 ease-out will-change-transform"
               className="flex h-full w-full transition-transform duration-700 ease-[cubic-bezier(.22,.61,.36,1)] will-change-transform"
               style={{ transform: `translateX(-${idx * 100}%)` }}
               onMouseEnter={interact}
               onTouchStart={interact}
             >
               {imgs.map((src, i) => (
-                <div key={i} className="min-w-full h-full">
+                <div key={i} className="min-w-full h-full relative">
                   <img
                     src={src}
                     alt={`${pack.title} ${i + 1}`}
-                    className="h-full w-full object-cover select-none pointer-events-none"
+                    className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
                     draggable={false}
                     loading={i === 0 ? "eager" : "lazy"}
                   />
@@ -250,27 +257,26 @@ function PackSocialCard({
       </div>
 
       {/* actions row */}
-      <div className="flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-4 text-white/80">
+      <div className="flex items-center justify-between px-2.5 py-2 sm:px-4 sm:py-3">
+        <div className="flex items-center gap-2.5 text-white/80 sm:gap-4">
           <div className="flex items-center gap-1">
-            <Heart className="h-5 w-5" />
-            <span className="text-sm">{likes.toLocaleString()}</span>
+            <Heart className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
+            <span className="text-[11px] sm:text-sm">{likes.toLocaleString()}</span>
           </div>
         </div>
-        <div className="flex items-center gap-4 text-white/80">
+        <div className="flex items-center gap-2.5 text-white/80 sm:gap-4">
           <div className="flex items-center gap-1">
-            <MessageCircle className="h-5 w-5" />
-            <span className="text-sm">{comments.toLocaleString()}</span>
+            <MessageCircle className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
+            <span className="text-[11px] sm:text-sm">{comments.toLocaleString()}</span>
           </div>
-          <Bookmark className="h-5 w-5 text-white/70" />
+          <Bookmark className="h-3.5 w-3.5 text-white/70 sm:h-5 sm:w-5" />
         </div>
       </div>
 
       {/* footer / CTA */}
-      <div className="px-4 pb-4">
-        <div className="flex items-center justify-between">
-          {/* price / promo */}
-          <div className="text-sm opacity-80">
+      <div className="mt-auto px-2.5 pb-2.5 sm:px-4 sm:pb-4">
+        <div className="flex items-end justify-between gap-2">
+          <div className="text-[11px] opacity-80 sm:text-sm">
             {freeCredits > 0 ? (
               <div className="flex items-center gap-2">
                 <span className="line-through opacity-60">
@@ -278,7 +284,7 @@ function PackSocialCard({
                 </span>
                 <span
                   className="inline-flex items-center rounded-full border border-emerald-400/30
-                       bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-300"
+                       bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-300 sm:text-[11px]"
                   title="You have a free credit available"
                 >
                   Free credit
@@ -291,10 +297,9 @@ function PackSocialCard({
             )}
           </div>
 
-          {/* CTA */}
           <Button
             size="sm"
-            className={`h-8 px-3 text-xs ${
+            className={`h-6 min-w-0 px-2 text-[10px] sm:h-8 sm:px-3 sm:text-xs ${
               freeCredits > 0
                 ? "bg-emerald-500 text-black hover:bg-emerald-500/90 dark:text-emerald-50"
                 : ""

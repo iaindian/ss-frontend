@@ -53,7 +53,7 @@ export type AttributesResponse = {
 // Enums (string unions) – tweak lists as you like:
 export type Ethnicity =
   | 'asian' | 'black' | 'latino' | 'middle_eastern' | 'south_asian'
-  | 'white' | 'mixed' | 'other'
+  | 'white' | 'mixed' | 'other' | 'Russian' | 'Indian' | 'Chinese' | 'Korean'
 
 export type FaceShape = 'oval' | 'round' | 'square' | 'heart' | 'diamond' | 'oblong'
 export type LipsFullness = 'thin' | 'medium' | 'full'
@@ -61,8 +61,8 @@ export type SkinTone = 'fair' | 'light' | 'medium' | 'tan' | 'brown' | 'dark'
 export type SkinFreckles = 'none' | 'light' | 'moderate' | 'heavy'
 export type HairLength = 'buzz' | 'short' | 'medium' | 'long' | 'very_long'
 export type HairStyle = 'straight' | 'wavy' | 'curly' | 'coily' | 'bald' | 'updo' | 'ponytail'
-export type HairColor = 'black' | 'brown' | 'blonde' | 'red' | 'auburn' | 'gray' | 'white' | 'colored'
-export type BodyType = 'slim' | 'average' | 'athletic' | 'curvy' | 'muscular' | 'plus_size'
+export type HairColor = 'black' | 'brown' | 'blonde' | 'red' | 'auburn' | 'gray' | 'white' | 'colored' | 'green' | 'pink' | 'purple'
+export type BodyType = 'slim' | 'average' | 'athletic' | 'curvy' | 'muscular' | 'plus_size' | 'hour glass'
 
 export type ApiError = {
   message: string

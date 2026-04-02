@@ -1,11 +1,4 @@
 @import "../styles/globals.css";
-.no-scrollbar {
-  -ms-overflow-style: none;     /* IE/Edge */
-  scrollbar-width: none;        /* Firefox */
-}
-.no-scrollbar::-webkit-scrollbar {
-  display: none;                /* Chrome/Safari */
-}
 
 .scrollbar-none {
   -ms-overflow-style: none;  /* IE/Edge */
@@ -28,5 +21,56 @@
 }
 
 /* optional: hide horizontal scrollbars for the rail */
-.scrollbar-none::-webkit-scrollbar { display: none; }
-.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+/* .scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; } */
+
+.h-scrollbar {
+  /* keep y hidden, show/beautify only the horizontal bar */
+  scrollbar-gutter: stable both-edges;
+  scrollbar-width: thin;                 /* Firefox */
+  scrollbar-color: var(--primary) transparent;
+}
+.h-scrollbar::-webkit-scrollbar {
+  height: 8px;                           /* horizontal bar thickness */
+}
+.h-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.h-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary) / 0.45);
+  border-radius: 9999px;
+}
+.h-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary));
+}
+
+.modal-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
+}
+
+.modal-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.modal-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.modal-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.45);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+[data-radix-scroll-area-viewport] {
+  scroll-behavior: smooth;
+}

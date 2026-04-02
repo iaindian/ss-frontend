@@ -4,7 +4,7 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   reactStrictMode: true,
-  output: 'export',
+  output: process.env.NODE_ENV === 'production' ? 'export' : undefined,
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: '**' },
@@ -26,4 +26,3 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
-

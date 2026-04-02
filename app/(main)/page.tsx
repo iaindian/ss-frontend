@@ -58,7 +58,7 @@ export default function PacksPage() {
       try {
         const resp: any = await Api.getSections().catch(() => ({ sections: [] }));
         if (cancelled) return;
-        const wanted = ["featured", "trending", "gym-series", "indoor-shoots"];
+        const wanted = ["latest","featured", "trending", "lifestyle", "fitness-wellness","work-passion","travel","nightlife","boudoir"];
         const show = (resp?.sections || []).filter((s: any) => wanted.includes(s.slug));
         setSections(show);
 
@@ -148,6 +148,7 @@ export default function PacksPage() {
         packTitle={selected?.title || "Selected pack"}
         attributes={attributes}
         referenceUrl={refUrl}
+        freeCredits={freeCredits}
         onConfirm={async () => { if (selected) await handleGenerate(selected); }}
       />
     </div>

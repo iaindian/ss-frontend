@@ -6,15 +6,15 @@ import type {
   HairLength, HairStyle, HairColor, BodyType,Gender
 } from '@/lib/types'
 
-const ETHNICITY: Ethnicity[] = ['asian','black','latino','middle_eastern','south_asian','white','mixed','other']
+const ETHNICITY: Ethnicity[] = ['asian','black','latino','Russian','Indian','Korean','Chinese','middle_eastern','south_asian','white','mixed','other']
 const FACE_SHAPE: FaceShape[] = ['oval','round','square','heart','diamond','oblong']
 const LIPS: LipsFullness[] = ['thin','medium','full']
 const SKIN_TONE: SkinTone[] = ['fair','light','medium','tan','brown','dark']
 const FRECKLES: SkinFreckles[] = ['none','light','moderate','heavy']
 const HAIR_LENGTH: HairLength[] = ['buzz','short','medium','long','very_long']
 const HAIR_STYLE: HairStyle[] = ['straight','wavy','curly','coily','bald','updo','ponytail']
-const HAIR_COLOR: HairColor[] = ['black','brown','blonde','red','auburn','gray','white','colored']
-const BODY_TYPE: BodyType[] = ['slim','average','athletic','curvy','muscular','plus_size']
+const HAIR_COLOR: HairColor[] = ['black','brown','blonde','red','auburn','gray','white','colored','green','pink','purple']
+const BODY_TYPE: BodyType[] = ['slim','average','athletic','curvy','muscular','plus_size', 'hour glass']
 const GENDER: Gender[] = ['female','male','non_binary']
 
 export function AttributesForm({

@@ -1,5 +1,5 @@
 import "./globals.css";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 // import { Inter, Orbitron } from "next/font/google"
 import { Inter, Outfit } from "next/font/google";
 import Script from "next/script";
@@ -17,6 +17,14 @@ export const metadata: Metadata = {
   title: "SuperSelfie AI",
   description:
     "Photorealistic AI-powered custom image packs for instagram with your likeness",
+  icons: {
+    icon: "/favicon.ico",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#09090b",
+  colorScheme: "dark",
 };
 
 // export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -36,6 +44,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
       <head>
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         {GA_ID && (
           <>
             <Script

@@ -1,42 +1,63 @@
-'use client'
-import * as React from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { gaEvent } from '@/lib/gtag';
+"use client";
+import * as React from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { gaEvent } from "@/lib/gtag";
 
-type Attrs = Record<string, any> | null | undefined
+type Attrs = Record<string, any> | null | undefined;
 
 function AttrRow({ label, value }: { label: string; value?: React.ReactNode }) {
-  if (value === undefined || value === null || value === '') return null
+  if (value === undefined || value === null || value === "") return null;
   return (
     <div className="flex items-start justify-between gap-3 py-1">
       <div className="text-xs text-foreground/60">{label}</div>
       <div className="text-sm text-right max-w-[60%]">{String(value)}</div>
     </div>
-  )
+  );
 }
 
 export function ConfirmGenerateDialog(props: {
-  open: boolean
-  onOpenChange: (v: boolean) => void
-  packTitle: string
-  attributes: Attrs
-  referenceUrl?: string | null
-  onConfirm: () => Promise<void> | void
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  packTitle: string;
+  freeCredits: number;
+  attributes: Attrs;
+  referenceUrl?: string | null;
+  onConfirm: () => Promise<void> | void;
 }) {
-  const { open, onOpenChange, packTitle, attributes, referenceUrl, onConfirm } = props
-  const [busy, setBusy] = React.useState(false)
+  const {
+    open,
+    onOpenChange,
+    packTitle,
+    attributes,
+    referenceUrl,
+    onConfirm,
+    freeCredits = 0,
+  } = props;
+  const [busy, setBusy] = React.useState(false);
 
   const handleConfirm = async () => {
     try {
-      setBusy(true)
-      await onConfirm()
-      gaEvent({ action: 'generate_pack_confirm', category: 'engagement', params: { packTitle } });
+      setBusy(true);
+      await onConfirm();
+      gaEvent({
+        action: "generate_pack_confirm",
+        category: "engagement",
+        params: { packTitle },
+      });
     } finally {
-      setBusy(false)
-      onOpenChange(false)
+      setBusy(false);
+      onOpenChange(false);
     }
-  }
+  };
+  const buttonText = freeCredits > 0 ? "Generate Free" : "Continue to payment";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -44,7 +65,8 @@ export function ConfirmGenerateDialog(props: {
         <DialogHeader>
           <DialogTitle>Confirm generation</DialogTitle>
           <DialogDescription>
-            We’ll use your reference face and the attributes below to personalize <span className="font-medium">{packTitle}</span>.
+            We’ll use your reference face and the attributes below to
+            personalize <span className="font-medium">{packTitle}</span>.
           </DialogDescription>
         </DialogHeader>
 
@@ -52,7 +74,11 @@ export function ConfirmGenerateDialog(props: {
           {/* Reference preview */}
           <div className="relative aspect-square w-32 overflow-hidden rounded-xl border border-border bg-muted">
             {referenceUrl ? (
-              <img src={referenceUrl} alt="Reference" className="h-full w-full object-cover" />
+              <img
+                src={referenceUrl}
+                alt="Reference"
+                className="h-full w-full object-cover"
+              />
             ) : (
               <div className="flex h-full w-full items-center justify-center text-xs text-foreground/60">
                 No reference
@@ -81,14 +107,18 @@ export function ConfirmGenerateDialog(props: {
         </div>
 
         <DialogFooter className="mt-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={busy}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={busy}
+          >
             Cancel
           </Button>
           <Button onClick={handleConfirm} disabled={busy}>
-            {busy ? 'Starting…' : 'Continue to payment'}
+            {busy ? "Starting…" : buttonText}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
