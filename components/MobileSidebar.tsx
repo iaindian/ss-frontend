@@ -9,6 +9,7 @@ import { clsxx } from '@/lib/utils'
 import Image from 'next/image'
 import { SocialLinks } from '@/components/SocialLinks'
 import { useAuth } from "@/hooks/useAuth";
+import { BuyCreditsModal } from "@/components/BuyCreditsModal";
 // Icons
 import {
   X,
@@ -56,6 +57,7 @@ export default function MobileSidebar({
   const pathname = usePathname()
   const items = authed ? itemsLoggedIn : itemsLoggedOut
   const { signOut } = useAuth();
+  const [buyOpen, setBuyOpen] = React.useState(false);
 
   async function handleLogout() {
     try {
@@ -112,12 +114,18 @@ export default function MobileSidebar({
 
         {/* Credits pill (optional) */}
         {authed && credits != null && (
-          <div className="px-4">
+          <div className="px-4 space-y-2">
             <div className="flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-emerald-300">
               <Zap className="h-4 w-4 drop-shadow-[0_0_6px_rgba(16,185,129,0.8)]" />
               <span className="font-semibold">{credits}</span>
-              <span className="opacity-90">Free credits</span>
+              <span className="opacity-90">credits</span>
             </div>
+            <button
+              onClick={() => { setBuyOpen(true); onClose(); }}
+              className="w-full rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/30 text-emerald-300 text-xs font-medium py-1.5 transition-colors"
+            >
+              + Buy Credits
+            </button>
           </div>
         )}
 
@@ -160,6 +168,7 @@ export default function MobileSidebar({
           </div>
         ) : null}
       </aside>
+      <BuyCreditsModal open={buyOpen} onOpenChange={setBuyOpen} />
     </div>
   )
 }

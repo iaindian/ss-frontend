@@ -11,6 +11,7 @@ import type { Pack } from "@/lib/types";
 import { SectionSocialRail } from "@/components/SectionSocialRail";
 import { useAttributes } from "@/hooks/useAttributes";
 import { ConfirmGenerateDialog } from "@/components/ConfirmGenerateDialog";
+import { BuyCreditsModal } from "@/components/BuyCreditsModal";
 
 function BoxSkeleton() {
   return (
@@ -19,17 +20,18 @@ function BoxSkeleton() {
 }
 
 export default function PacksPage() {
-  const { packs, loading, error } = usePacks();  // ✅ do NOT early-return on loading
+  const { loading, error } = usePacks();  // ✅ do NOT early-return on loading
   
   const { me } = useAuth();
   const { attributes } = useAttributes();
 
   const [confirmOpen, setConfirmOpen] = React.useState(false);
+  const [buyCreditsOpen, setBuyCreditsOpen] = React.useState(false);
   const [selected, setSelected] = React.useState<Pack | null>(null);
   const [refUrl, setRefUrl] = React.useState<string | null>(null);
-  const [freeCredits, setFreeCredits] = React.useState<number>(0);
+  const freeCredits = Number(me?.free_credits ?? 0);
 
-  // ---- profile: fire-and-forget with timeout, never block UI
+  // ---- profile: fire-and-forget — only need reference_image_url here
   React.useEffect(() => {
     let dead = false;
     const ctrl = new AbortController();
@@ -37,10 +39,7 @@ export default function PacksPage() {
     (async () => {
       try {
         const res: any = await Api.getMyProfile();
-        if (!dead && res) {
-          setRefUrl(res?.reference_image_url || null);
-          setFreeCredits(Number(res?.free_credits || 0));
-        }
+        if (!dead && res) setRefUrl(res?.reference_image_url || null);
       } catch {}
       finally { clearTimeout(t); }
     })();
@@ -109,7 +108,11 @@ export default function PacksPage() {
       window.location.href = "/orders";
     } catch (e: any) {
       logger.error("Generate failed", { error: e?.message });
-      alert(e?.message || "Failed to create order");
+      if (e?.message === "insufficient_credits" || e?.code === "402") {
+        setBuyCreditsOpen(true);
+      } else {
+        alert(e?.message || "Failed to create order");
+      }
     }
   }
 
@@ -151,6 +154,7 @@ export default function PacksPage() {
         freeCredits={freeCredits}
         onConfirm={async () => { if (selected) await handleGenerate(selected); }}
       />
+      <BuyCreditsModal open={buyCreditsOpen} onOpenChange={setBuyCreditsOpen} />
     </div>
   );
 }

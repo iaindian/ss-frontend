@@ -7,7 +7,7 @@ import { useAttributes } from "@/hooks/useAttributes";
 import { Api } from "@/lib/api";
 import type { Pack } from "@/lib/types";
 import { logger } from "@/lib/logger";
-import { cents } from "@/lib/utils";
+
 import { Button } from "@/components/ui/button";
 import { ErrorView } from "@/components/ErrorView";
 import { PackGallery } from "@/components/PackGallery";
@@ -17,6 +17,7 @@ import { gaEvent } from "@/lib/gtag";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { ConfirmGenerateDialog } from "@/components/ConfirmGenerateDialog";
+import { BuyCreditsModal } from "@/components/BuyCreditsModal";
 
 type Props = {
   /** when used as fallback from /packs, you can pass the slug explicitly */
@@ -44,6 +45,7 @@ export default function PackDetailClient({
   const [buying, setBuying] = React.useState(false);
   const { me } = useAuth();
   const [confirmOpen, setConfirmOpen] = React.useState(false);
+  const [buyCreditsOpen, setBuyCreditsOpen] = React.useState(false);
   const [referenceUrl, setRefUrl] = React.useState<string | null>(null);
   const sentView = React.useRef<string | null>(null);
 
@@ -188,7 +190,11 @@ export default function PackDetailClient({
       router.push("/orders");
     } catch (e: any) {
       logger.error("order.create.failed", { error: e?.message });
-      alert(e?.message || "Failed to create order");
+      if (e?.message === "insufficient_credits" || e?.code === "402") {
+        setBuyCreditsOpen(true);
+      } else {
+        alert(e?.message || "Failed to create order");
+      }
     } finally {
       setBuying(false);
     }
@@ -232,12 +238,23 @@ export default function PackDetailClient({
       <div className="md:col-span-1">
         <div className="sticky top-20 space-y-3">
           <div className="rounded-2xl border border-border bg-card p-4">
-            <div className="text-sm opacity-70 mb-1">Price</div>
-            <div className="text-xl font-semibold">
-              {pack && (pack as any).price_cents != null
-                ? cents((pack as any).price_cents, (pack as any).currency)
-                : "—"}
+            <div className="text-sm opacity-70 mb-1">Cost</div>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-xl font-semibold">20 credits</span>
+              <span className="text-xs opacity-50">per generation</span>
             </div>
+            {Number(me?.free_credits ?? 0) >= 20 ? (
+              <div className="mt-1 text-xs text-emerald-400">
+                You have <strong>{me!.free_credits}</strong> credits — enough for {Math.floor(Number(me!.free_credits) / 20)} pack{Math.floor(Number(me!.free_credits) / 20) !== 1 ? "s" : ""}
+              </div>
+            ) : (
+              <button
+                onClick={() => setBuyCreditsOpen(true)}
+                className="mt-1 text-xs text-emerald-300 underline-offset-2 hover:underline"
+              >
+                + Buy credits
+              </button>
+            )}
             <div className="mt-4 grid gap-2">
               <Button onClick={openConfirm} loading={buying}>
                 Generate This Pack
@@ -245,9 +262,6 @@ export default function PackDetailClient({
               <Button variant="outline" onClick={() => setPreviewOpen(true)}>
                 Preview on Social
               </Button>
-            </div>
-            <div className="mt-3 text-xs opacity-70">
-              New users get <strong>3 free credits</strong> on first login.
             </div>
           </div>
 
@@ -274,8 +288,10 @@ export default function PackDetailClient({
         packTitle={pack?.title ?? 'Selected pack'}
         attributes={attributes}
         referenceUrl={referenceUrl}
+        freeCredits={Number(me?.free_credits ?? 0)}
         onConfirm={handleGenerate}
       />
+      <BuyCreditsModal open={buyCreditsOpen} onOpenChange={setBuyCreditsOpen} />
     </div>
   );
 }

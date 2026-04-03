@@ -43,6 +43,16 @@ export type Attributes = {
   body_type?: BodyType
   height_cm?: number
   gender?: Gender
+  // body detail sub-attributes
+  bust_size?: BustSize
+  waist_shape?: WaistShape
+  hip_width?: HipWidth
+  butt_shape?: ButtShape
+  thigh_shape?: ThighShape
+  midriff?: Midriff
+  // eyes
+  eye_color?: EyeColor
+  eye_makeup?: EyeMakeup
 }
 
 export type AttributesResponse = {
@@ -57,12 +67,33 @@ export type Ethnicity =
 
 export type FaceShape = 'oval' | 'round' | 'square' | 'heart' | 'diamond' | 'oblong'
 export type LipsFullness = 'thin' | 'medium' | 'full'
-export type SkinTone = 'fair' | 'light' | 'medium' | 'tan' | 'brown' | 'dark'
+export type SkinTone =
+  | 'porcelain' | 'ivory' | 'fair' | 'light_beige' | 'peach'
+  | 'medium' | 'olive' | 'tan' | 'caramel' | 'brown' | 'mahogany' | 'dark' | 'ebony'
 export type SkinFreckles = 'none' | 'light' | 'moderate' | 'heavy'
 export type HairLength = 'buzz' | 'short' | 'medium' | 'long' | 'very_long'
-export type HairStyle = 'straight' | 'wavy' | 'curly' | 'coily' | 'bald' | 'updo' | 'ponytail'
+export type HairStyle =
+  | 'straight' | 'wavy' | 'curly' | 'coily'
+  | 'bob' | 'pixie' | 'bun' | 'ponytail'
+  | 'braid' | 'box_braids' | 'updo' | 'half_up'
+  | 'bald'
 export type HairColor = 'black' | 'brown' | 'blonde' | 'red' | 'auburn' | 'gray' | 'white' | 'colored' | 'green' | 'pink' | 'purple'
-export type BodyType = 'slim' | 'average' | 'athletic' | 'curvy' | 'muscular' | 'plus_size' | 'hour glass'
+export type BodyType =
+  | 'slim' | 'petite' | 'lean_athletic' | 'athletic'
+  | 'curvy' | 'hourglass' | 'full_hourglass'
+  | 'pear' | 'apple' | 'thick' | 'plus_size'
+  | 'muscular' | 'rectangle' | 'busty'
+  // legacy
+  | 'average' | 'hour glass'
+
+export type BustSize    = 'petite' | 'small' | 'medium' | 'large' | 'very_large'
+export type WaistShape  = 'very_narrow' | 'narrow' | 'average' | 'wide'
+export type HipWidth    = 'narrow' | 'average' | 'wide' | 'very_wide'
+export type ButtShape   = 'flat' | 'average' | 'round' | 'bubble' | 'large_bubble'
+export type ThighShape  = 'slim' | 'average' | 'thick' | 'very_thick'
+export type Midriff     = 'toned' | 'soft' | 'defined'
+export type EyeColor    = 'brown' | 'dark_brown' | 'hazel' | 'green' | 'blue' | 'gray' | 'amber' | 'black'
+export type EyeMakeup   = 'natural' | 'cat_eye' | 'smoky' | 'bold_lashes' | 'no_makeup' | 'glam'
 
 export type ApiError = {
   message: string
@@ -111,3 +142,12 @@ export type Pack = {
 
 export type Paginated<T> = { items: T[]; next_cursor?: string | null }
 export type Section = { slug: string; name: string; type: 'latest'|'featured'|'trending'|'tags'; tags?: string[] }
+
+export type CreditBundle = {
+  id: string
+  credits: number
+  price_cents: number
+  currency: string
+  label: string        // e.g. "Starter"
+  badge?: string       // e.g. "Best value"
+}

@@ -20,6 +20,7 @@ import {
   Users,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { BuyCreditsModal } from "@/components/BuyCreditsModal";
 
 type Item = { href: string; label: string; icon: React.ElementType };
 // type Item = { href: string; label: string };
@@ -68,6 +69,7 @@ export function Sidebar({
   const pathname = usePathname();
   const items = authed ? itemsLoggedIn : itemsLoggedOut;
   const { signOut } = useAuth();
+  const [buyOpen, setBuyOpen] = React.useState(false);
 
   async function handleLogout() {
     try {
@@ -182,14 +184,13 @@ export function Sidebar({
                   </div>
                 </div>
 
-                {/* optional action */}
-                <a
-                  href="/tutorial#credits"
-                  className="text-xs text-emerald-300/80 underline-offset-2 hover:underline hover:text-emerald-300"
-                >
-                  how it works
-                </a>
               </div>
+              <button
+                onClick={() => setBuyOpen(true)}
+                className="mt-2 w-full rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/30 text-emerald-300 text-xs font-medium py-1.5 transition-colors"
+              >
+                + Buy Credits
+              </button>
             </div>
           </div>
 
@@ -211,6 +212,7 @@ export function Sidebar({
           </button>
         </>
       )}
+      <BuyCreditsModal open={buyOpen} onOpenChange={setBuyOpen} />
     </aside>
   );
 }

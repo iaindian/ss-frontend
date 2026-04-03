@@ -163,6 +163,12 @@ uploadReferenceImage: (file: File) => {
   apiFetch<{ items: Array<{ id: string; created_at?: string; order_id?: string; message?: string; status?: string }> }>(
     `/support/tickets?limit=${limit}&offset=${offset}`
   ),
+  getCreditBundles: () => apiFetch<{ bundles: import('@/lib/types').CreditBundle[] }>('/credits/bundles'),
+  buyCreditBundle: (bundle_id: string) =>
+    apiFetch<{ checkout_url?: string; client_secret?: string }>('/credits/purchase', {
+      method: 'POST',
+      body: JSON.stringify({ bundle_id }),
+    }),
 }
 
 /* ------------ EXPORT TOGGLE ------------- */
