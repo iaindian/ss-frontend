@@ -104,7 +104,19 @@ const realApi = {
   getMe: (): Promise<Me> => apiFetch<Me>('/me'),
 
   getAttributes: () => apiFetch('/attributes'),
-  getMyProfile: () => apiFetch<{ reference_image_url?: string }>('/me/profile'),
+  getMyProfile: (() => {
+    let cachedAt = 0
+    let cached: Promise<{ reference_image_url?: string; free_credits?: number }> | null = null
+    const TTL = 30_000 // 30 seconds
+    return () => {
+      const now = Date.now()
+      if (cached && now - cachedAt < TTL) return cached
+      cachedAt = now
+      cached = apiFetch<{ reference_image_url?: string; free_credits?: number }>('/me/profile')
+        .catch((e) => { cached = null; throw e }) // clear on error so next call retries
+      return cached
+    }
+  })(),
   updateAttributes: (payload: any) =>
     apiFetch('/attributes', { method: 'PUT', body: JSON.stringify(payload) }),
 
