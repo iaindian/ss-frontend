@@ -82,11 +82,13 @@ export function ConfirmGenerateDialog(props: {
   onOpenChange: (v: boolean) => void
   packTitle: string
   freeCredits: number
+  creditCost?: number
   attributes: Attributes | null | undefined
   referenceUrl?: string | null
   onConfirm: () => Promise<void> | void
 }) {
-  const { open, onOpenChange, packTitle, attributes, referenceUrl, onConfirm, freeCredits = 0 } = props
+  const { open, onOpenChange, packTitle, attributes, referenceUrl, onConfirm, freeCredits = 0, creditCost: creditCostProp } = props
+  const creditCost = creditCostProp ?? 20
   const [busy, setBusy] = React.useState(false)
   const prompt = buildPrompt(attributes)
 
@@ -190,11 +192,11 @@ export function ConfirmGenerateDialog(props: {
         {/* Footer */}
         <div className="px-5 py-4 border-t border-border flex items-center justify-between gap-3">
           <div className="text-xs opacity-50">
-            {freeCredits >= 20
-              ? <span className="text-green-400 font-medium">{freeCredits} credits (costs 20)</span>
+            {freeCredits >= creditCost
+              ? <span className="text-green-400 font-medium">{freeCredits} credits (costs {creditCost})</span>
               : freeCredits > 0
-                ? <span className="text-amber-400 font-medium">{freeCredits} credits — need 20 to generate</span>
-                : "No credits — buy a pack to generate"}
+                ? <span className="text-amber-400 font-medium">{freeCredits} credits — need {creditCost} to generate</span>
+                : "No credits — buy a bundle to generate"}
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => onOpenChange(false)} disabled={busy}>Cancel</Button>
@@ -204,7 +206,7 @@ export function ConfirmGenerateDialog(props: {
                   <span className="h-3.5 w-3.5 rounded-full border-2 border-current border-t-transparent animate-spin"/>
                   Starting…
                 </span>
-              ) : freeCredits >= 20 ? "Generate (20 credits)" : "Continue to payment"}
+              ) : freeCredits >= creditCost ? `Generate (${creditCost} credits)` : "Continue to payment"}
             </Button>
           </div>
         </div>

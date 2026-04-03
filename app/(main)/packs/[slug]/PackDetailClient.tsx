@@ -7,6 +7,7 @@ import { useAttributes } from "@/hooks/useAttributes";
 import { Api } from "@/lib/api";
 import type { Pack } from "@/lib/types";
 import { logger } from "@/lib/logger";
+import { packCreditCost } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import { ErrorView } from "@/components/ErrorView";
@@ -240,12 +241,12 @@ export default function PackDetailClient({
           <div className="rounded-2xl border border-border bg-card p-4">
             <div className="text-sm opacity-70 mb-1">Cost</div>
             <div className="flex items-baseline gap-1.5">
-              <span className="text-xl font-semibold">20 credits</span>
+              <span className="text-xl font-semibold">{packCreditCost(pack)} credits</span>
               <span className="text-xs opacity-50">per generation</span>
             </div>
-            {Number(me?.free_credits ?? 0) >= 20 ? (
+            {Number(me?.free_credits ?? 0) >= packCreditCost(pack) ? (
               <div className="mt-1 text-xs text-emerald-400">
-                You have <strong>{me!.free_credits}</strong> credits — enough for {Math.floor(Number(me!.free_credits) / 20)} pack{Math.floor(Number(me!.free_credits) / 20) !== 1 ? "s" : ""}
+                You have <strong>{me!.free_credits}</strong> credits — enough for {Math.floor(Number(me!.free_credits) / packCreditCost(pack))} pack{Math.floor(Number(me!.free_credits) / packCreditCost(pack)) !== 1 ? "s" : ""}
               </div>
             ) : (
               <button
@@ -289,6 +290,7 @@ export default function PackDetailClient({
         attributes={attributes}
         referenceUrl={referenceUrl}
         freeCredits={Number(me?.free_credits ?? 0)}
+        creditCost={packCreditCost(pack)}
         onConfirm={handleGenerate}
       />
       <BuyCreditsModal open={buyCreditsOpen} onOpenChange={setBuyCreditsOpen} />

@@ -11,6 +11,7 @@ import type { Pack } from "@/lib/types";
 import { SectionSocialRail } from "@/components/SectionSocialRail";
 import { useAttributes } from "@/hooks/useAttributes";
 import { ConfirmGenerateDialog } from "@/components/ConfirmGenerateDialog";
+import { packCreditCost } from "@/lib/utils";
 import { BuyCreditsModal } from "@/components/BuyCreditsModal";
 
 function BoxSkeleton() {
@@ -152,6 +153,7 @@ export default function PacksPage() {
         attributes={attributes}
         referenceUrl={refUrl}
         freeCredits={freeCredits}
+        creditCost={selected ? packCreditCost(selected) : 20}
         onConfirm={async () => { if (selected) await handleGenerate(selected); }}
       />
       <BuyCreditsModal open={buyCreditsOpen} onOpenChange={setBuyCreditsOpen} />

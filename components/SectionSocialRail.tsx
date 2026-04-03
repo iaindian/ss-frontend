@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Heart, MessageCircle, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
+import { cn, packCreditCost } from "@/lib/utils";
 import type { Pack } from "@/lib/types";
 import { gaEvent } from "@/lib/gtag";
 
@@ -277,28 +277,30 @@ function PackSocialCard({
       <div className="mt-auto px-2.5 pb-2.5 sm:px-4 sm:pb-4">
         <div className="flex items-end justify-between gap-1.5 sm:gap-2">
           <div className="min-w-0 text-[10px] opacity-80 sm:text-sm">
-            {freeCredits >= 20 ? (
+            {freeCredits >= packCreditCost(pack) ? (
               <span
                 className="inline-flex max-w-full items-center rounded-full border border-emerald-400/30
                      bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-medium leading-tight text-emerald-300 sm:px-2 sm:text-[11px]"
               >
-                20 credits
+                {packCreditCost(pack) === 0 ? "Free" : `${packCreditCost(pack)} credits`}
               </span>
             ) : (
-              <span className="font-medium opacity-60">20 credits</span>
+              <span className="font-medium opacity-60">
+                {packCreditCost(pack) === 0 ? "Free" : `${packCreditCost(pack)} credits`}
+              </span>
             )}
           </div>
 
           <Button
             className={`h-6 min-w-0 shrink-0 justify-center rounded-xl px-1.5 text-[9px] leading-none sm:h-8 sm:px-3 sm:text-xs ${
-              freeCredits >= 20
+              freeCredits >= packCreditCost(pack)
                 ? "bg-emerald-500 text-black hover:bg-emerald-500/90 dark:text-emerald-50"
                 : ""
             }`}
             onClick={onGenerate}
-            aria-label={freeCredits >= 20 ? "Generate with credits" : "Generate"}
+            aria-label={freeCredits >= packCreditCost(pack) ? "Generate with credits" : "Generate"}
           >
-            {freeCredits >= 20 ? "Generate Free" : "Generate"}
+            {freeCredits >= packCreditCost(pack) ? "Generate Free" : "Generate"}
           </Button>
         </div>
       </div>

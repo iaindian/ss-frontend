@@ -138,6 +138,7 @@ export type Pack = {
   featured_weight?: number
   workflow?: string | null
   published_at?: string
+  credit_cost?: number | null  // null = use global default (20)
 }
 
 export type Paginated<T> = { items: T[]; next_cursor?: string | null }
